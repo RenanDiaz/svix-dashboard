@@ -1,7 +1,6 @@
-// src/components/Endpoints/EndpointCard.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Card, CardBody, CardTitle, CardSubtitle, Button, Badge } from "reactstrap";
+import { Badge, Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import { Endpoint } from "../../types";
 
 interface EndpointCardProps {
@@ -44,7 +43,7 @@ const AppBadge = styled(Badge)`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const EndpointCard: React.FC<EndpointCardProps> = ({ endpoint, applicationName }) => {
+const EndpointCard: FC<EndpointCardProps> = ({ endpoint, applicationName }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();

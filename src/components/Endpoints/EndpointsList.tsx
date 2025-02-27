@@ -1,25 +1,12 @@
-// src/components/Endpoints/EndpointsList.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Table, Badge } from "reactstrap";
 import { Endpoint, Application } from "../../types";
 import EndpointCard from "./EndpointCard";
 
 interface EndpointsListProps {
   endpoints: Endpoint[];
-  applications: Application[];
+  application?: Application;
 }
-
-const TableWrapper = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  box-shadow: ${({ theme }) => theme.shadows.card};
-  overflow: hidden;
-`;
-
-const StyledTable = styled(Table)`
-  margin-bottom: 0;
-`;
 
 const EmptyState = styled.div`
   text-align: center;
@@ -35,7 +22,7 @@ const CardsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const EndpointsList: React.FC<EndpointsListProps> = ({ endpoints, applications }) => {
+const EndpointsList: FC<EndpointsListProps> = ({ endpoints, application }) => {
   if (endpoints.length === 0) {
     return (
       <EmptyState>
@@ -45,18 +32,13 @@ const EndpointsList: React.FC<EndpointsListProps> = ({ endpoints, applications }
     );
   }
 
-  const getApplicationName = (appId: string) => {
-    const app = applications.find((a) => a.id === appId);
-    return app ? app.name : "Unknown Application";
-  };
-
   return (
     <CardsContainer>
       {endpoints.map((endpoint) => (
         <EndpointCard
           key={endpoint.id}
           endpoint={endpoint}
-          applicationName={getApplicationName(endpoint.applicationId)}
+          applicationName={application?.name || ""}
         />
       ))}
     </CardsContainer>

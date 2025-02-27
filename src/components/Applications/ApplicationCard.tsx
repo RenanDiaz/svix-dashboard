@@ -1,7 +1,6 @@
-// src/components/Applications/ApplicationCard.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Card, CardBody, CardTitle, CardSubtitle, Button } from "reactstrap";
+import { Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import { Application } from "../../types";
 
 interface ApplicationCardProps {
@@ -39,7 +38,7 @@ const DateInfo = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
-const ApplicationCard: React.FC<ApplicationCardProps> = ({ application }) => {
+const ApplicationCard: FC<ApplicationCardProps> = ({ application }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();

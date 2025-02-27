@@ -1,5 +1,3 @@
-// src/types/index.ts
-
 export interface Application {
   id: string;
   name: string;
@@ -13,7 +11,15 @@ export interface Endpoint {
   url: string;
   description: string;
   version: number;
-  applicationId: string;
   createdAt: string;
   updatedAt: string;
+  disabled: boolean;
+  metadata: Record<string, any>;
+  filterTypes: string[] | null;
+  channels: string[] | null;
+  rateLimit: {
+    window: number;
+    limit: number;
+  } | null;
+  uid: string | null;
 }

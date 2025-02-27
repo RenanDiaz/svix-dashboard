@@ -1,5 +1,4 @@
-// src/components/Layout/Sidebar.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
 import { NavLink as RRNavLink } from "react-router-dom";
 import { Nav, NavItem, NavLink } from "reactstrap";
@@ -39,7 +38,7 @@ const SidebarLink = styled(NavLink)`
   }
 `;
 
-const Sidebar: React.FC = () => {
+const Sidebar: FC = () => {
   return (
     <SidebarWrapper>
       <SidebarHeader>

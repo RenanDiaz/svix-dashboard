@@ -1,5 +1,4 @@
-// src/components/Layout/Navbar.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
 import { Navbar as RSNavbar, NavbarBrand } from "reactstrap";
 
@@ -9,7 +8,7 @@ const StyledNavbar = styled(RSNavbar)`
   padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
 `;
 
-const Navbar: React.FC = () => {
+const Navbar: FC = () => {
   return (
     <StyledNavbar light expand="md">
       <NavbarBrand>Svix Dashboard</NavbarBrand>

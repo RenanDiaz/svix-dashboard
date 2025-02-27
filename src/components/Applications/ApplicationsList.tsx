@@ -1,7 +1,6 @@
-// src/components/Applications/ApplicationsList.tsx
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Row, Col } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import ApplicationCard from "./ApplicationCard";
 import { Application } from "../../types";
 
@@ -17,7 +16,7 @@ const EmptyState = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.card};
 `;
 
-const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications }) => {
+const ApplicationsList: FC<ApplicationsListProps> = ({ applications }) => {
   if (applications.length === 0) {
     return (
       <EmptyState>

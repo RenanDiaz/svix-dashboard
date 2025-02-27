@@ -1,12 +1,11 @@
-// src/components/Layout/Layout.tsx
-import React from "react";
+import { FC, ReactNode } from "react";
 import styled from "styled-components";
 import { Container } from "reactstrap";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const LayoutWrapper = styled.div`
@@ -20,7 +19,7 @@ const Content = styled.main`
   margin-left: 250px; // Width of the sidebar
 `;
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <LayoutWrapper>
       <Sidebar />
