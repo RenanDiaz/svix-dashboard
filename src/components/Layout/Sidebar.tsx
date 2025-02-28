@@ -55,6 +55,11 @@ const Sidebar: FC = () => {
             Endpoints
           </SidebarLink>
         </NavItem>
+        <NavItem>
+          <SidebarLink tag={RRNavLink} to="/messages" activeClassName="active">
+            Messages
+          </SidebarLink>
+        </NavItem>
         {/* Add more sidebar items as needed */}
       </SidebarMenu>
     </SidebarWrapper>

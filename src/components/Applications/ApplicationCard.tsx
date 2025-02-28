@@ -64,6 +64,11 @@ const ApplicationCard: FC<ApplicationCardProps> = ({ application }) => {
               View Endpoints
             </Button>
           </LinkContainer>
+          <LinkContainer to={`/applications/${application.id}/messages`}>
+            <Button color="primary" outline size="sm">
+              View Messages
+            </Button>
+          </LinkContainer>
           <Button color="danger" outline size="sm">
             Delete
           </Button>

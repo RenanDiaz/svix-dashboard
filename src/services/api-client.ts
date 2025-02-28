@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Endpoint } from "../types";
+import { Application, Endpoint, Message } from "../types";
 
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_SVIX_API_URL,
@@ -59,5 +59,22 @@ export const deleteEndpoint = (applicationId: string, endpointId: string): Promi
     .then(() => {})
     .catch((error) => {
       console.error("Error deleting endpoint", error);
+    });
+};
+
+interface MessagesResponse {
+  data: Message[];
+  iterator: string;
+  prevIterator: string;
+  done: boolean;
+}
+
+export const getMessages = (applicationId: string): Promise<MessagesResponse> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}/msg`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching messages", error);
+      return { data: [], iterator: "", prevIterator: "", done: true };
     });
 };

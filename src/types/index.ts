@@ -23,3 +23,12 @@ export interface Endpoint {
   } | null;
   uid: string | null;
 }
+
+export interface Message {
+  eventId: string;
+  eventType: string;
+  payload: object;
+  channels: string[];
+  id: string;
+  timestamp: string;
+}
