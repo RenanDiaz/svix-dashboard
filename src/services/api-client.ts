@@ -52,3 +52,12 @@ export const getEndpoints = (applicationId: string): Promise<EndpointsResponse> 
       return { data: [], iterator: "", prevIterator: "", done: true };
     });
 };
+
+export const deleteEndpoint = (applicationId: string, endpointId: string): Promise<void> => {
+  return apiClient
+    .delete(`/api/v1/app/${applicationId}/endpoint/${endpointId}`)
+    .then(() => {})
+    .catch((error) => {
+      console.error("Error deleting endpoint", error);
+    });
+};

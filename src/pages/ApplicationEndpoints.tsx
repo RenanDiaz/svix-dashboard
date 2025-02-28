@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect, FC, useCallback } from "react";
 import styled from "styled-components";
 import { Button, Col, Input, InputGroup, Row } from "reactstrap";
 import EndpointsList from "../components/Endpoints/EndpointsList";
@@ -28,10 +28,12 @@ const ApplicationEndpoints: FC = () => {
     getApplication(id).then((data) => setApplication(data));
   }, [id]);
 
-  useEffect(() => {
+  const updateEndpoints = useCallback(() => {
     if (!application) return;
     getEndpoints(application.id).then(({ data }) => setEndpoints(data));
   }, [application]);
+
+  useEffect(updateEndpoints, [updateEndpoints]);
 
   const filteredEndpoints = endpoints.filter((endpoint) => {
     const matchesSearch =
@@ -61,7 +63,11 @@ const ApplicationEndpoints: FC = () => {
 
       <Row>
         <Col>
-          <EndpointsList endpoints={filteredEndpoints} application={application} />
+          <EndpointsList
+            endpoints={filteredEndpoints}
+            application={application}
+            updateEndpoints={updateEndpoints}
+          />
         </Col>
       </Row>
     </div>

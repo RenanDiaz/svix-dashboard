@@ -1,11 +1,24 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
-import { Badge, Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
-import { Endpoint } from "../../types";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardSubtitle,
+  CardTitle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "reactstrap";
+import { Application, Endpoint } from "../../types";
+import { deleteEndpoint } from "../../services/api-client";
 
 interface EndpointCardProps {
   endpoint: Endpoint;
-  applicationName: string;
+  application?: Application;
+  updateEndpoints: () => void;
 }
 
 const StyledCard = styled(Card)`
@@ -43,41 +56,112 @@ const AppBadge = styled(Badge)`
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const EndpointCard: FC<EndpointCardProps> = ({ endpoint, applicationName }) => {
+const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndpoints }) => {
+  const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [showError, setShowError] = useState<boolean>(false);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return date.toLocaleString();
+  };
+
+  const toggleConfirmDeleteModal = () => {
+    setConfirmDeleteModalIsOpen(!confirmDeleteModalIsOpen);
+  };
+
+  const confirmDeleteEndpoint = () => {
+    if (!application) return;
+    deleteEndpoint(application.id, endpoint.id)
+      .then(() => {
+        updateEndpoints();
+        toggleConfirmDeleteModal();
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setShowError(true);
+      });
+  };
+
+  const toggleErrorModal = () => {
+    setShowError(!showError);
+  };
+
+  const handleErrorClosed = () => {
+    setErrorMessage("");
   };
 
   return (
-    <StyledCard>
-      <CardBody>
-        <CardTitle tag="h5">{endpoint.description}</CardTitle>
-        <CardSubtitle tag="h6" className="mb-2 text-muted">
-          ID: {endpoint.id}
-        </CardSubtitle>
+    <>
+      <StyledCard>
+        <CardBody>
+          <CardTitle tag="h5">{endpoint.description}</CardTitle>
+          <CardSubtitle tag="h6" className="mb-2 text-muted">
+            ID: {endpoint.id}
+          </CardSubtitle>
 
-        <AppBadge color="info">{applicationName}</AppBadge>
+          <AppBadge color="info">{application?.name}</AppBadge>
 
-        <EndpointUrl>{endpoint.url}</EndpointUrl>
+          <EndpointUrl>{endpoint.url}</EndpointUrl>
 
-        <div className="mb-3">
-          <Badge color="secondary">Version {endpoint.version}</Badge>
-        </div>
+          {endpoint.channels && endpoint.channels.length > 0 && (
+            <>
+              <CardSubtitle tag="h6" className="mb-2 text-muted">
+                Channels:
+              </CardSubtitle>
+              <div className="mb-3">
+                {endpoint.channels.map((channel) => (
+                  <Badge key={channel} color="dark" className="me-1" pill>
+                    {channel}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
 
-        <DateInfo>Created: {formatDate(endpoint.createdAt)}</DateInfo>
-        <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
+          <div className="mb-3">
+            <Badge color="secondary">Version {endpoint.version}</Badge>
+          </div>
 
-        <CardActions>
-          <Button color="primary" outline size="sm">
-            View Details
-          </Button>
-          <Button color="danger" outline size="sm">
+          <DateInfo>Created: {formatDate(endpoint.createdAt)}</DateInfo>
+          <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
+
+          <CardActions>
+            <Button color="primary" outline size="sm">
+              View Details
+            </Button>
+            <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
+              Delete
+            </Button>
+          </CardActions>
+        </CardBody>
+      </StyledCard>
+
+      <Modal isOpen={confirmDeleteModalIsOpen} toggle={toggleConfirmDeleteModal}>
+        <ModalHeader toggle={toggleConfirmDeleteModal}>Confirm Delete</ModalHeader>
+        <ModalBody>
+          Are you sure you want to delete the endpoint <strong>{endpoint.description}</strong>?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={confirmDeleteEndpoint}>
             Delete
           </Button>
-        </CardActions>
-      </CardBody>
-    </StyledCard>
+          <Button color="secondary" onClick={toggleConfirmDeleteModal}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={showError} toggle={toggleErrorModal} onClosed={handleErrorClosed}>
+        <ModalHeader toggle={() => setShowError(false)}>Error</ModalHeader>
+        <ModalBody>{errorMessage}</ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowError(false)}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
   );
 };
 

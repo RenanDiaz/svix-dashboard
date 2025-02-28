@@ -6,6 +6,7 @@ import EndpointCard from "./EndpointCard";
 interface EndpointsListProps {
   endpoints: Endpoint[];
   application?: Application;
+  updateEndpoints: () => void;
 }
 
 const EmptyState = styled.div`
@@ -22,7 +23,7 @@ const CardsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const EndpointsList: FC<EndpointsListProps> = ({ endpoints, application }) => {
+const EndpointsList: FC<EndpointsListProps> = ({ endpoints, application, updateEndpoints }) => {
   if (endpoints.length === 0) {
     return (
       <EmptyState>
@@ -38,7 +39,8 @@ const EndpointsList: FC<EndpointsListProps> = ({ endpoints, application }) => {
         <EndpointCard
           key={endpoint.id}
           endpoint={endpoint}
-          applicationName={application?.name || ""}
+          application={application}
+          updateEndpoints={updateEndpoints}
         />
       ))}
     </CardsContainer>
