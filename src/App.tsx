@@ -5,6 +5,7 @@ import { GlobalStyles } from "./styles/GlobalStyles";
 import { theme } from "./styles/theme";
 import Layout from "./components/Layout/Layout";
 import Applications from "./pages/Applications";
+import ApplicationEndpoints from "./pages/ApplicationEndpoints";
 import Endpoints from "./pages/Endpoints";
 
 const App: React.FC = () => {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Applications />} />
             <Route path="/applications" element={<Applications />} />
+            <Route path="/applications/:id/endpoints" element={<ApplicationEndpoints />} />
             <Route path="/endpoints" element={<Endpoints />} />
           </Routes>
         </Layout>

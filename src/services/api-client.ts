@@ -26,6 +26,16 @@ export const getApplications = (): Promise<ApplicationsResponse> => {
     });
 };
 
+export const getApplication = (applicationId: string): Promise<Application> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching application", error);
+      return null;
+    });
+};
+
 interface EndpointsResponse {
   data: Endpoint[];
   iterator: string;

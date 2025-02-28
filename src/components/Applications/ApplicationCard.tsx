@@ -1,6 +1,7 @@
 import { FC } from "react";
 import styled from "styled-components";
 import { Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import { Application } from "../../types";
 
 interface ApplicationCardProps {
@@ -58,9 +59,11 @@ const ApplicationCard: FC<ApplicationCardProps> = ({ application }) => {
         <DateInfo>Updated: {formatDate(application.updatedAt)}</DateInfo>
 
         <CardActions>
-          <Button color="primary" outline size="sm">
-            View Details
-          </Button>
+          <LinkContainer to={`/applications/${application.id}/endpoints`}>
+            <Button color="primary" outline size="sm">
+              View Endpoints
+            </Button>
+          </LinkContainer>
           <Button color="danger" outline size="sm">
             Delete
           </Button>
