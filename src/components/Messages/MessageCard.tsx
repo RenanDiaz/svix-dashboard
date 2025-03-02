@@ -1,21 +1,21 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
-import { Badge, Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
+import { Card, CardBody, CardTitle, Button, Badge, Collapse } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
 
 interface MessageCardProps {
   message: Message;
   application?: Application;
-  updateMessages: () => void;
 }
 
 const StyledCard = styled(Card)`
   box-shadow: ${({ theme }) => theme.shadows.card};
   transition: transform 0.2s ease-in-out;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
   }
 `;
 
@@ -25,27 +25,45 @@ const CardActions = styled.div`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
-const MessagePayload = styled.pre`
-  font-family: monospace;
-  background-color: ${({ theme }) => theme.colors.light};
-  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: 0.85rem;
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  word-break: break-all;
+const EventTypeBadge = styled(Badge)`
+  margin-right: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const DateInfo = styled.div`
-  color: ${({ theme }) => theme.colors.secondary};
+const ChannelBadge = styled(Badge)`
+  margin-right: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const MessageId = styled.div`
+  font-family: monospace;
   font-size: 0.85rem;
+  color: ${({ theme }) => theme.colors.secondary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
-const AppBadge = styled(Badge)`
+const TimestampInfo = styled.div`
+  color: ${({ theme }) => theme.colors.secondary};
+  font-size: 0.85rem;
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
-const MessageCard: FC<MessageCardProps> = ({ message, application, updateMessages }) => {
+const PayloadWrapper = styled.div`
+  background-color: ${({ theme }) => theme.colors.light};
+  padding: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.sm};
+  font-family: monospace;
+  font-size: 0.85rem;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  overflow-x: auto;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
+  const [showPayload, setShowPayload] = useState(false);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -54,41 +72,50 @@ const MessageCard: FC<MessageCardProps> = ({ message, application, updateMessage
   return (
     <StyledCard>
       <CardBody>
-        <CardTitle tag="h5">Type: {message.eventType}</CardTitle>
-        <CardSubtitle tag="h6" className="mb-2 text-muted">
-          ID: {message.id}
-        </CardSubtitle>
+        <CardTitle tag="h5">
+          <EventTypeBadge color="primary">{message.eventType}</EventTypeBadge>
+        </CardTitle>
 
-        <AppBadge color="info">{application?.name}</AppBadge>
+        <MessageId>ID: {message.id}</MessageId>
+        {message.eventId && <MessageId>Event ID: {message.eventId}</MessageId>}
 
-        <MessagePayload>{JSON.stringify(message.payload, null, 2)}</MessagePayload>
+        <TimestampInfo>Sent: {formatDate(message.timestamp)}</TimestampInfo>
 
         {message.channels && message.channels.length > 0 && (
-          <>
-            <CardSubtitle tag="h6" className="mb-2 text-muted">
-              Channels:
-            </CardSubtitle>
-            <div className="mb-3">
-              {message.channels.map((channel) => (
-                <Badge key={channel} color="dark" className="me-1" pill>
-                  {channel}
-                </Badge>
-              ))}
-            </div>
-          </>
+          <div className="mb-3">
+            <strong>Channels: </strong>
+            {message.channels?.map((channel, index) => (
+              <ChannelBadge key={index} color="info">
+                {channel}
+              </ChannelBadge>
+            ))}
+          </div>
         )}
 
-        <DateInfo>Timestamp: {formatDate(message.timestamp)}</DateInfo>
+        <Button
+          color="secondary"
+          size="sm"
+          onClick={() => setShowPayload(!showPayload)}
+          className="mb-3"
+        >
+          {showPayload ? "Hide Payload" : "Show Payload"}
+        </Button>
+
+        <Collapse isOpen={showPayload}>
+          <PayloadWrapper>
+            <pre>{JSON.stringify(message.payload, null, 2)}</pre>
+          </PayloadWrapper>
+        </Collapse>
 
         <CardActions>
+          <Button color="primary" outline size="sm">
+            View Details
+          </Button>
           <LinkContainer to={`/applications/${application?.id}/messages/${message.id}/attempts`}>
-            <Button color="primary" outline size="sm">
+            <Button color="success" outline size="sm">
               View Attempts
             </Button>
           </LinkContainer>
-          <Button color="danger" outline size="sm">
-            Delete
-          </Button>
         </CardActions>
       </CardBody>
     </StyledCard>

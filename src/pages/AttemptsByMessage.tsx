@@ -1,8 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { Application, Attempt, Message } from "../types";
-import { getApplication, getAttemptsByMessage, getMessage } from "../services/api-client";
+import { Attempt, Message } from "../types";
+import { getAttemptsByMessage, getMessage } from "../services/api-client";
 import { Button, Col, Input, InputGroup, Row } from "reactstrap";
 import AttemptsList from "../components/Attempts/AttemptsList";
 
@@ -19,26 +19,27 @@ const SearchWrapper = styled.div`
 
 const AttemptsByMessage: FC = () => {
   const { applicationId, messageId } = useParams<{ applicationId: string; messageId: string }>();
-  const [application, setApplication] = useState<Application>();
   const [message, setMessage] = useState<Message>();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    if (!applicationId) return;
-    getApplication(applicationId).then((data) => setApplication(data));
-  }, [applicationId]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!messageId) return;
-    getMessage(messageId).then((data) => setMessage(data));
+    getMessage(messageId)
+      .then((data) => setMessage(data))
+      .catch(() => setMessage(undefined));
   }, [messageId]);
 
   const updateAttempts = useCallback(() => {
     if (!applicationId || !messageId) return;
-    getAttemptsByMessage(applicationId, messageId).then((response) => {
-      setAttempts(response.data);
-    });
+    setAttempts([]);
+    setIsLoading(true);
+    getAttemptsByMessage(applicationId, messageId)
+      .then((response) => {
+        setAttempts(response.data);
+      })
+      .finally(() => setIsLoading(false));
   }, [applicationId, messageId]);
 
   useEffect(updateAttempts, [updateAttempts]);
@@ -57,19 +58,21 @@ const AttemptsByMessage: FC = () => {
           <SearchWrapper className="me-2">
             <InputGroup>
               <Input
-                placeholder="Search messages..."
+                placeholder="Search attempts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </InputGroup>
           </SearchWrapper>
-          <Button color="primary">Create Message</Button>
+          <Button color="primary" onClick={updateAttempts}>
+            Reload
+          </Button>
         </div>
       </PageHeader>
 
       <Row>
         <Col>
-          <AttemptsList attempts={filteredAttempts} application={application} />
+          <AttemptsList attempts={filteredAttempts} isLoading={isLoading} />
         </Col>
       </Row>
     </div>

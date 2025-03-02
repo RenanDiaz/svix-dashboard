@@ -1,8 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { Application, Attempt, Endpoint } from "../types";
-import { getApplication, getAttemptsByEndpoint, getEndpoint } from "../services/api-client";
+import { Attempt, Endpoint } from "../types";
+import { getAttemptsByEndpoint, getEndpoint } from "../services/api-client";
 import { Button, Col, Input, InputGroup, Row } from "reactstrap";
 import AttemptsList from "../components/Attempts/AttemptsList";
 
@@ -19,26 +19,25 @@ const SearchWrapper = styled.div`
 
 const AttemptsByEndpoint: FC = () => {
   const { applicationId, endpointId } = useParams<{ applicationId: string; endpointId: string }>();
-  const [application, setApplication] = useState<Application>();
   const [endpoint, setEndpoint] = useState<Endpoint>();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    if (!applicationId) return;
-    getApplication(applicationId).then((data) => setApplication(data));
-  }, [applicationId]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!endpointId) return;
-    getEndpoint(endpointId).then((data) => setEndpoint(data));
+    getEndpoint(endpointId)
+      .then((data) => setEndpoint(data))
+      .catch(() => setEndpoint(undefined));
   }, [endpointId]);
 
   const updateAttempts = useCallback(() => {
     if (!applicationId || !endpointId) return;
-    getAttemptsByEndpoint(applicationId, endpointId).then((response) => {
-      setAttempts(response.data);
-    });
+    setAttempts([]);
+    setIsLoading(true);
+    getAttemptsByEndpoint(applicationId, endpointId)
+      .then((response) => setAttempts(response.data))
+      .finally(() => setIsLoading(false));
   }, [applicationId, endpointId]);
 
   useEffect(updateAttempts, [updateAttempts]);
@@ -69,7 +68,7 @@ const AttemptsByEndpoint: FC = () => {
 
       <Row>
         <Col>
-          <AttemptsList attempts={filteredAttempts} application={application} />
+          <AttemptsList attempts={filteredAttempts} isLoading={isLoading} />
         </Col>
       </Row>
     </div>

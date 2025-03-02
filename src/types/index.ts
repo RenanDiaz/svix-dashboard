@@ -28,7 +28,7 @@ export interface Message {
   eventId: string;
   eventType: string;
   payload: object;
-  channels: string[];
+  channels?: string[];
   id: string;
   timestamp: string;
 }
@@ -38,8 +38,8 @@ export interface Attempt {
   response: string;
   responseStatusCode: number;
   responseDurationMs: number;
-  status: number;
-  triggerType: number;
+  status: 0 | 1 | 2 | 3;
+  triggerType: 0 | 1;
   msgId: string;
   endpointId: string;
   id: string;

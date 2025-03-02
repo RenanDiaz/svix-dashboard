@@ -1,11 +1,12 @@
 import { FC } from "react";
 import styled from "styled-components";
-import { Application, Attempt } from "../../types";
+import { Attempt } from "../../types";
 import AttemptCard from "./AttemptCard";
+import AttemptCardPlaceholder from "./AttemptCardPlaceholder";
 
 interface AttemptsListProps {
   attempts: Attempt[];
-  application?: Application;
+  isLoading: boolean;
 }
 
 const EmptyState = styled.div`
@@ -22,7 +23,7 @@ const CardsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const AttemptsList: FC<AttemptsListProps> = ({ attempts, application }) => {
+const AttemptsList: FC<AttemptsListProps> = ({ attempts, isLoading }) => {
   if (attempts.length === 0) {
     return (
       <EmptyState>
@@ -33,9 +34,11 @@ const AttemptsList: FC<AttemptsListProps> = ({ attempts, application }) => {
 
   return (
     <CardsContainer>
-      {attempts.map((attempt) => (
-        <AttemptCard key={attempt.id} attempt={attempt} application={application} />
-      ))}
+      {attempts.length === 0 && isLoading ? (
+        <AttemptCardPlaceholder />
+      ) : (
+        attempts.map((attempt) => <AttemptCard key={attempt.id} attempt={attempt} />)
+      )}
     </CardsContainer>
   );
 };

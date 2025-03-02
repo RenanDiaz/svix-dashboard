@@ -61,11 +61,7 @@ const ApplicationMessages: FC = () => {
 
       <Row>
         <Col>
-          <MessagesList
-            messages={filteredMessages}
-            application={application}
-            updateMessages={updateMessages}
-          />
+          <MessagesList messages={filteredMessages} />
         </Col>
       </Row>
     </div>

@@ -7,7 +7,6 @@ import MessageCard from "./MessageCard";
 interface MessagesListProps {
   messages: Message[];
   application?: Application;
-  updateMessages: () => void;
 }
 
 const EmptyState = styled.div`
@@ -18,7 +17,7 @@ const EmptyState = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.card};
 `;
 
-const MessagesList: FC<MessagesListProps> = ({ messages, application, updateMessages }) => {
+const MessagesList: FC<MessagesListProps> = ({ messages, application }) => {
   if (messages.length === 0) {
     return (
       <EmptyState>
@@ -32,11 +31,7 @@ const MessagesList: FC<MessagesListProps> = ({ messages, application, updateMess
     <Row>
       {messages.map((message) => (
         <Col key={message.id} md={6} lg={4} className="mb-4">
-          <MessageCard
-            message={message}
-            application={application}
-            updateMessages={updateMessages}
-          />
+          <MessageCard message={message} application={application} />
         </Col>
       ))}
     </Row>

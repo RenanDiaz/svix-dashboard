@@ -54,13 +54,11 @@ export const getEndpoints = (applicationId: string): Promise<EndpointsResponse> 
 };
 
 export const getEndpoint = (endpointId: string): Promise<Endpoint> => {
-  return apiClient
-    .get(`/api/v1/endpoint/${endpointId}`)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching endpoint", error);
-      return null;
-    });
+  return apiClient.get(`/api/v1/endpoint/${endpointId}`).then((response) => {
+    console.log({ response });
+    if (response.status === 200) return response.data;
+    throw new Error(response.statusText);
+  });
 };
 
 export const deleteEndpoint = (applicationId: string, endpointId: string): Promise<void> => {
@@ -90,13 +88,11 @@ export const getMessages = (applicationId: string): Promise<MessagesResponse> =>
 };
 
 export const getMessage = (messageId: string): Promise<Message> => {
-  return apiClient
-    .get(`/api/v1/msg/${messageId}`)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error fetching message", error);
-      return null;
-    });
+  return apiClient.get(`/api/v1/msg/${messageId}`).then((response) => {
+    console.log({ response });
+    if (response.status === 200) return response.data;
+    throw new Error(response.statusText);
+  });
 };
 
 interface AttemptsResponse {
