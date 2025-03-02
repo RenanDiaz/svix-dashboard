@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Endpoint, Message } from "../types";
+import { Application, Attempt, Endpoint, Message } from "../types";
 
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_SVIX_API_URL,
@@ -53,6 +53,16 @@ export const getEndpoints = (applicationId: string): Promise<EndpointsResponse> 
     });
 };
 
+export const getEndpoint = (endpointId: string): Promise<Endpoint> => {
+  return apiClient
+    .get(`/api/v1/endpoint/${endpointId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching endpoint", error);
+      return null;
+    });
+};
+
 export const deleteEndpoint = (applicationId: string, endpointId: string): Promise<void> => {
   return apiClient
     .delete(`/api/v1/app/${applicationId}/endpoint/${endpointId}`)
@@ -75,6 +85,49 @@ export const getMessages = (applicationId: string): Promise<MessagesResponse> =>
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching messages", error);
+      return { data: [], iterator: "", prevIterator: "", done: true };
+    });
+};
+
+export const getMessage = (messageId: string): Promise<Message> => {
+  return apiClient
+    .get(`/api/v1/msg/${messageId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching message", error);
+      return null;
+    });
+};
+
+interface AttemptsResponse {
+  data: Attempt[];
+  iterator: string;
+  prevIterator: string;
+  done: boolean;
+}
+
+export const getAttemptsByMessage = (
+  applicationId: string,
+  messageId: string
+): Promise<AttemptsResponse> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}/attempt/msg/${messageId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching attempts", error);
+      return { data: [], iterator: "", prevIterator: "", done: true };
+    });
+};
+
+export const getAttemptsByEndpoint = (
+  applicationId: string,
+  endpointId: string
+): Promise<AttemptsResponse> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}/attempt/endpoint/${endpointId}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching attempts", error);
       return { data: [], iterator: "", prevIterator: "", done: true };
     });
 };

@@ -14,6 +14,7 @@ import {
 } from "reactstrap";
 import { Application, Endpoint } from "../../types";
 import { deleteEndpoint } from "../../services/api-client";
+import { LinkContainer } from "react-router-bootstrap";
 
 interface EndpointCardProps {
   endpoint: Endpoint;
@@ -127,9 +128,13 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
           <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
 
           <CardActions>
-            <Button color="primary" outline size="sm">
-              View Details
-            </Button>
+            <LinkContainer
+              to={`/applications/${application?.id}/endpoints/${endpoint.id}/attempts`}
+            >
+              <Button color="primary" outline size="sm">
+                View Attempts
+              </Button>
+            </LinkContainer>
             <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
               Delete
             </Button>

@@ -2,6 +2,7 @@ import { FC } from "react";
 import styled from "styled-components";
 import { Badge, Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import { Application, Message } from "../../types";
+import { LinkContainer } from "react-router-bootstrap";
 
 interface MessageCardProps {
   message: Message;
@@ -80,9 +81,11 @@ const MessageCard: FC<MessageCardProps> = ({ message, application, updateMessage
         <DateInfo>Timestamp: {formatDate(message.timestamp)}</DateInfo>
 
         <CardActions>
-          <Button color="primary" outline size="sm">
-            View Details
-          </Button>
+          <LinkContainer to={`/applications/${application?.id}/messages/${message.id}/attempts`}>
+            <Button color="primary" outline size="sm">
+              View Attempts
+            </Button>
+          </LinkContainer>
           <Button color="danger" outline size="sm">
             Delete
           </Button>

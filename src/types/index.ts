@@ -32,3 +32,16 @@ export interface Message {
   id: string;
   timestamp: string;
 }
+
+export interface Attempt {
+  url: string;
+  response: string;
+  responseStatusCode: number;
+  responseDurationMs: number;
+  status: number;
+  triggerType: number;
+  msgId: string;
+  endpointId: string;
+  id: string;
+  timestamp: string;
+}

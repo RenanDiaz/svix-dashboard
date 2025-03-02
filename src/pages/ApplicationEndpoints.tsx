@@ -18,15 +18,15 @@ const SearchWrapper = styled.div`
 `;
 
 const ApplicationEndpoints: FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { applicationId } = useParams<{ applicationId: string }>();
   const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
   const [application, setApplication] = useState<Application>();
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
-    if (!id) return;
-    getApplication(id).then((data) => setApplication(data));
-  }, [id]);
+    if (!applicationId) return;
+    getApplication(applicationId).then((data) => setApplication(data));
+  }, [applicationId]);
 
   const updateEndpoints = useCallback(() => {
     if (!application) return;

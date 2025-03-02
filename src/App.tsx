@@ -9,6 +9,8 @@ import ApplicationEndpoints from "./pages/ApplicationEndpoints";
 import ApplicationMessages from "./pages/ApplicationMessages";
 import Endpoints from "./pages/Endpoints";
 import Messages from "./pages/Messages";
+import AttemptsByEndpoint from "./pages/AttemptsByEndpoint";
+import AttemptsByMessage from "./pages/AttemptsByMessage";
 
 const App: React.FC = () => {
   return (
@@ -19,8 +21,19 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Applications />} />
             <Route path="/applications" element={<Applications />} />
-            <Route path="/applications/:id/endpoints" element={<ApplicationEndpoints />} />
-            <Route path="/applications/:id/messages" element={<ApplicationMessages />} />
+            <Route
+              path="/applications/:applicationId/endpoints"
+              element={<ApplicationEndpoints />}
+            />
+            <Route
+              path="/applications/:applicationId/endpoints/:endpointId/attempts"
+              element={<AttemptsByEndpoint />}
+            />
+            <Route path="/applications/:applicationId/messages" element={<ApplicationMessages />} />
+            <Route
+              path="/applications/:applicationId/messages/:messageId/attempts"
+              element={<AttemptsByMessage />}
+            />
             <Route path="/endpoints" element={<Endpoints />} />
             <Route path="/messages" element={<Messages />} />
           </Routes>
