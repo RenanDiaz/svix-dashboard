@@ -62,7 +62,9 @@ const AttemptsByEndpoint: FC = () => {
               />
             </InputGroup>
           </SearchWrapper>
-          <Button color="primary">Create Message</Button>
+          <Button color="primary" onClick={updateAttempts}>
+            Reload
+          </Button>
         </div>
       </PageHeader>
 

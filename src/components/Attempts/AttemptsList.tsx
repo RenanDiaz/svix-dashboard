@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styled from "styled-components";
 import { Attempt } from "../../types";
 import AttemptCard from "./AttemptCard";
@@ -7,6 +7,12 @@ import AttemptCardPlaceholder from "./AttemptCardPlaceholder";
 interface AttemptsListProps {
   attempts: Attempt[];
   isLoading: boolean;
+}
+
+export enum HighlightType {
+  None,
+  Message,
+  Endpoint,
 }
 
 const EmptyState = styled.div`
@@ -24,6 +30,19 @@ const CardsContainer = styled.div`
 `;
 
 const AttemptsList: FC<AttemptsListProps> = ({ attempts, isLoading }) => {
+  const [highlightType, setHighlightType] = useState<HighlightType>(HighlightType.None);
+  const [highlightedText, setHighlightedText] = useState<string>("");
+
+  const toggleHighlight = (type: HighlightType, text: string) => {
+    if (highlightType === type && highlightedText === text) {
+      setHighlightType(HighlightType.None);
+      setHighlightedText("");
+    } else {
+      setHighlightType(type);
+      setHighlightedText(text);
+    }
+  };
+
   if (attempts.length === 0) {
     return (
       <EmptyState>
@@ -37,7 +56,15 @@ const AttemptsList: FC<AttemptsListProps> = ({ attempts, isLoading }) => {
       {attempts.length === 0 && isLoading ? (
         <AttemptCardPlaceholder />
       ) : (
-        attempts.map((attempt) => <AttemptCard key={attempt.id} attempt={attempt} />)
+        attempts.map((attempt) => (
+          <AttemptCard
+            key={attempt.id}
+            attempt={attempt}
+            highlitedType={highlightType}
+            highlightedText={highlightedText}
+            toggleHighlight={toggleHighlight}
+          />
+        ))
       )}
     </CardsContainer>
   );

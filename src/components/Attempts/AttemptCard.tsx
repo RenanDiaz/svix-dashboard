@@ -1,10 +1,15 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Card, CardBody, CardTitle, CardSubtitle, Button, Badge, Collapse } from "reactstrap";
+import { Card, CardBody, CardTitle, CardSubtitle, Button, Badge } from "reactstrap";
 import { Attempt } from "../../types";
+import { HighlightType } from "./AttemptsList";
+import classNames from "classnames";
 
 interface AttemptCardProps {
   attempt: Attempt;
+  highlitedType: HighlightType;
+  highlightedText: string;
+  toggleHighlight: (type: HighlightType, text: string) => void;
 }
 
 const StyledCard = styled(Card)`
@@ -42,6 +47,12 @@ const AttemptInfo = styled.div`
   color: ${({ theme }) => theme.colors.secondary};
   font-size: 0.85rem;
   margin-bottom: ${({ theme }) => theme.spacing.sm};
+  &.highlight {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.white};
+    padding: ${({ theme }) => theme.spacing.xs};
+    border-radius: ${({ theme }) => theme.borderRadius.sm};
+  }
 `;
 
 const ResponseWrapper = styled.div`
@@ -57,9 +68,12 @@ const ResponseWrapper = styled.div`
   overflow-y: auto;
 `;
 
-const AttemptCard: FC<AttemptCardProps> = ({ attempt }) => {
-  const [showResponse, setShowResponse] = useState(false);
-
+const AttemptCard: FC<AttemptCardProps> = ({
+  attempt,
+  highlitedType,
+  highlightedText,
+  toggleHighlight,
+}) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -120,10 +134,21 @@ const AttemptCard: FC<AttemptCardProps> = ({ attempt }) => {
 
         <EndpointUrl>{attempt.url}</EndpointUrl>
 
-        <AttemptInfo>
+        <AttemptInfo
+          className={classNames({
+            highlight: highlitedType === HighlightType.Message && highlightedText === attempt.msgId,
+          })}
+          onClick={() => toggleHighlight(HighlightType.Message, attempt.msgId)}
+        >
           <strong>Message ID:</strong> {attempt.msgId}
         </AttemptInfo>
-        <AttemptInfo>
+        <AttemptInfo
+          className={classNames({
+            highlight:
+              highlitedType === HighlightType.Endpoint && highlightedText === attempt.endpointId,
+          })}
+          onClick={() => toggleHighlight(HighlightType.Endpoint, attempt.endpointId)}
+        >
           <strong>Endpoint ID:</strong> {attempt.endpointId}
         </AttemptInfo>
         <AttemptInfo>
@@ -136,24 +161,12 @@ const AttemptCard: FC<AttemptCardProps> = ({ attempt }) => {
           <strong>Timestamp:</strong> {formatDate(attempt.timestamp)}
         </AttemptInfo>
 
-        {attempt.response && (
-          <>
-            <Button
-              color="secondary"
-              size="sm"
-              onClick={() => setShowResponse(!showResponse)}
-              className="mt-3"
-            >
-              {showResponse ? "Hide Response" : "Show Response"}
-            </Button>
-
-            <Collapse isOpen={showResponse}>
-              <ResponseWrapper>
-                <pre>{processResponse(attempt.response)}</pre>
-              </ResponseWrapper>
-            </Collapse>
-          </>
-        )}
+        <AttemptInfo className="mb-1">
+          <strong>Response:</strong>
+        </AttemptInfo>
+        <ResponseWrapper className="mt-0">
+          <pre>{processResponse(attempt.response)}</pre>
+        </ResponseWrapper>
 
         <CardActions>
           <Button color="primary" outline size="sm">

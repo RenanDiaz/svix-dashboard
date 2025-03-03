@@ -1,6 +1,6 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import styled from "styled-components";
-import { Card, CardBody, CardTitle, Button, Badge, Collapse } from "reactstrap";
+import { Card, CardBody, CardTitle, Button, Badge } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
 
@@ -62,8 +62,6 @@ const PayloadWrapper = styled.div`
 `;
 
 const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
-  const [showPayload, setShowPayload] = useState(false);
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -92,20 +90,9 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
           </div>
         )}
 
-        <Button
-          color="secondary"
-          size="sm"
-          onClick={() => setShowPayload(!showPayload)}
-          className="mb-3"
-        >
-          {showPayload ? "Hide Payload" : "Show Payload"}
-        </Button>
-
-        <Collapse isOpen={showPayload}>
-          <PayloadWrapper>
-            <pre>{JSON.stringify(message.payload, null, 2)}</pre>
-          </PayloadWrapper>
-        </Collapse>
+        <PayloadWrapper>
+          <pre>{JSON.stringify(message.payload, null, 2)}</pre>
+        </PayloadWrapper>
 
         <CardActions>
           <Button color="primary" outline size="sm">
