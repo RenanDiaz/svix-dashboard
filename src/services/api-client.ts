@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Attempt, Endpoint, Message } from "../types";
+import { Application, Attempt, Endpoint, EventType, Message } from "../types";
 
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_SVIX_API_URL,
@@ -125,5 +125,46 @@ export const getAttemptsByEndpoint = (
     .catch((error) => {
       console.error("Error fetching attempts", error);
       return { data: [], iterator: "", prevIterator: "", done: true };
+    });
+};
+
+interface EventTypesResponse {
+  data: EventType[];
+  iterator: string;
+  prevIterator: string;
+  done: boolean;
+}
+
+export const getEventTypes = (): Promise<EventTypesResponse> => {
+  return apiClient
+    .get("/api/v1/event-type")
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching event types", error);
+      return { data: [], iterator: "", prevIterator: "", done: true };
+    });
+};
+
+interface EventTypePayload {
+  name: string;
+  description: string;
+}
+
+export const createEventType = (eventType: EventTypePayload): Promise<EventType> => {
+  return apiClient
+    .post("/api/v1/event-type", eventType)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error creating event type", error);
+      return null;
+    });
+};
+
+export const deleteEventType = (eventTypeName: string): Promise<void> => {
+  return apiClient
+    .delete(`/api/v1/event-type/${eventTypeName}`)
+    .then(() => {})
+    .catch((error) => {
+      console.error("Error deleting event type", error);
     });
 };

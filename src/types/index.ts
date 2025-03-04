@@ -45,3 +45,14 @@ export interface Attempt {
   id: string;
   timestamp: string;
 }
+
+export interface EventType {
+  name: string;
+  description: string;
+  archived: boolean;
+  deprecated: boolean;
+  schemas?: object;
+  createdAt: string;
+  updatedAt: string;
+  featureFlag?: string;
+}

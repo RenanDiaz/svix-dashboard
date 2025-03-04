@@ -11,6 +11,7 @@ import Endpoints from "./pages/Endpoints";
 import Messages from "./pages/Messages";
 import AttemptsByEndpoint from "./pages/AttemptsByEndpoint";
 import AttemptsByMessage from "./pages/AttemptsByMessage";
+import EventTypes from "./pages/EventTypes";
 
 const App: React.FC = () => {
   return (
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             />
             <Route path="/endpoints" element={<Endpoints />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/event-types" element={<EventTypes />} />
           </Routes>
         </Layout>
       </Router>

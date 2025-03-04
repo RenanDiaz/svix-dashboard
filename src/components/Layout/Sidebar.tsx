@@ -60,6 +60,11 @@ const Sidebar: FC = () => {
             Messages
           </SidebarLink>
         </NavItem>
+        <NavItem>
+          <SidebarLink tag={RRNavLink} to="/event-types" activeClassName="active">
+            Event Types
+          </SidebarLink>
+        </NavItem>
         {/* Add more sidebar items as needed */}
       </SidebarMenu>
     </SidebarWrapper>
