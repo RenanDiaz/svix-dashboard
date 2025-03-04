@@ -31,6 +31,8 @@ export interface Message {
   channels?: string[];
   id: string;
   timestamp: string;
+  status?: 0 | 1 | 2 | 3;
+  nextAttempt?: string;
 }
 
 export interface Attempt {

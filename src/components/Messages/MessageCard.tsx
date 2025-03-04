@@ -61,11 +61,35 @@ const PayloadWrapper = styled.div`
   overflow-y: auto;
 `;
 
+const StatusBadge = styled(Badge)<{ $statusType: "success" | "warning" | "danger" }>`
+  margin-right: ${({ theme }) => theme.spacing.xs};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+// Helper function to determine status badge color and text
+const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
+  switch (status) {
+    case 0:
+      return { color: "success", text: "Success" };
+    case 1:
+      return { color: "warning", text: "Pending" };
+    case 2:
+      return { color: "danger", text: "Failed" };
+    case 3:
+      return { color: "info", text: "Sending" };
+  }
+};
+
 const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
   };
+
+  const statusInfo =
+    message.status !== undefined
+      ? getStatusInfo(message.status)
+      : { color: "info", text: "No status" };
 
   return (
     <StyledCard>
@@ -78,6 +102,18 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
         {message.eventId && <MessageId>Event ID: {message.eventId}</MessageId>}
 
         <TimestampInfo>Sent: {formatDate(message.timestamp)}</TimestampInfo>
+        {message.nextAttempt && (
+          <TimestampInfo>Next Attempt: {formatDate(message.nextAttempt)}</TimestampInfo>
+        )}
+
+        {message.status !== undefined && (
+          <StatusBadge
+            $statusType={statusInfo.color as "success" | "warning" | "danger"}
+            color={statusInfo.color}
+          >
+            {statusInfo.text}
+          </StatusBadge>
+        )}
 
         {message.channels && message.channels.length > 0 && (
           <div className="mb-3">

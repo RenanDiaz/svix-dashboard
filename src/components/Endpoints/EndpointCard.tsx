@@ -135,6 +135,13 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
                 View Attempts
               </Button>
             </LinkContainer>
+            <LinkContainer
+              to={`/applications/${application?.id}/endpoints/${endpoint.id}/messages`}
+            >
+              <Button color="primary" outline size="sm">
+                View Messages
+              </Button>
+            </LinkContainer>
             <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
               Delete
             </Button>

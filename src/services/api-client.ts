@@ -1,11 +1,18 @@
 import axios from "axios";
 import { Application, Attempt, Endpoint, EventType, Message } from "../types";
 
+const { REACT_APP_SVIX_API_TOKEN, REACT_APP_SVIX_API_SCHEME, REACT_APP_SVIX_API_PORT } =
+  process.env;
+
+const { hostname } = window.location;
+
+const domain = `${REACT_APP_SVIX_API_SCHEME}://${hostname}:${REACT_APP_SVIX_API_PORT}/`;
+
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_SVIX_API_URL,
+  baseURL: domain,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.REACT_APP_SVIX_API_TOKEN}`,
+    Authorization: `Bearer ${REACT_APP_SVIX_API_TOKEN}`,
   },
 });
 
@@ -53,8 +60,8 @@ export const getEndpoints = (applicationId: string): Promise<EndpointsResponse> 
     });
 };
 
-export const getEndpoint = (endpointId: string): Promise<Endpoint> => {
-  return apiClient.get(`/api/v1/endpoint/${endpointId}`).then((response) => {
+export const getEndpoint = (applicationId: string, endpointId: string): Promise<Endpoint> => {
+  return apiClient.get(`/api/v1/app/${applicationId}/endpoint/${endpointId}`).then((response) => {
     console.log({ response });
     if (response.status === 200) return response.data;
     throw new Error(response.statusText);
@@ -93,6 +100,19 @@ export const getMessage = (messageId: string): Promise<Message> => {
     if (response.status === 200) return response.data;
     throw new Error(response.statusText);
   });
+};
+
+export const getMessagesByEndpoint = (
+  applicationId: string,
+  endpointId: string
+): Promise<MessagesResponse> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}/endpoint/${endpointId}/msg`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching messages", error);
+      return { data: [], iterator: "", prevIterator: "", done: true };
+    });
 };
 
 interface AttemptsResponse {

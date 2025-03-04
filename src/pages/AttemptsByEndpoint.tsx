@@ -25,11 +25,11 @@ const AttemptsByEndpoint: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!endpointId) return;
-    getEndpoint(endpointId)
+    if (!applicationId || !endpointId) return;
+    getEndpoint(applicationId, endpointId)
       .then((data) => setEndpoint(data))
       .catch(() => setEndpoint(undefined));
-  }, [endpointId]);
+  }, [applicationId, endpointId]);
 
   const updateAttempts = useCallback(() => {
     if (!applicationId || !endpointId) return;
