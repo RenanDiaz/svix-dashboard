@@ -51,7 +51,7 @@ const Endpoints: FC = () => {
   return (
     <div>
       <PageHeader>
-        <h1>Endpoints</h1>
+        <h1>Consumers</h1>
         <Button color="primary">Create Endpoint</Button>
       </PageHeader>
 

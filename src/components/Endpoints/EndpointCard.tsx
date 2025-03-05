@@ -15,6 +15,7 @@ import {
 import { Application, Endpoint } from "../../types";
 import { deleteEndpoint } from "../../services/api-client";
 import { LinkContainer } from "react-router-bootstrap";
+import { channelNames } from "../../globals/utils";
 
 interface EndpointCardProps {
   endpoint: Endpoint;
@@ -92,6 +93,8 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
     setErrorMessage("");
   };
 
+  const channels = endpoint.channels?.sort((a, b) => a.localeCompare(b)) || undefined;
+
   return (
     <>
       <StyledCard>
@@ -105,15 +108,15 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
 
           <EndpointUrl>{endpoint.url}</EndpointUrl>
 
-          {endpoint.channels && endpoint.channels.length > 0 && (
+          {channels && channels.length > 0 && (
             <>
               <CardSubtitle tag="h6" className="mb-2 text-muted">
                 Channels:
               </CardSubtitle>
               <div className="mb-3">
-                {endpoint.channels.map((channel) => (
+                {channels.map((channel) => (
                   <Badge key={channel} color="dark" className="me-1" pill>
-                    {channel}
+                    {channelNames(channel)}
                   </Badge>
                 ))}
               </div>

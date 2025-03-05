@@ -52,7 +52,7 @@ const Sidebar: FC = () => {
         </NavItem>
         <NavItem>
           <SidebarLink tag={RRNavLink} to="/endpoints" activeClassName="active">
-            Endpoints
+            Consumers
           </SidebarLink>
         </NavItem>
         <NavItem>

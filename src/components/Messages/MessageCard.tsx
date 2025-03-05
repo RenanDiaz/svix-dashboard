@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardTitle, Button, Badge } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
+import { channelNames } from "../../globals/utils";
 
 interface MessageCardProps {
   message: Message;
@@ -91,6 +92,8 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
       ? getStatusInfo(message.status)
       : { color: "info", text: "No status" };
 
+  const channels = message.channels?.sort((a, b) => a.localeCompare(b)) || undefined;
+
   return (
     <StyledCard>
       <CardBody>
@@ -115,12 +118,13 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
           </StatusBadge>
         )}
 
-        {message.channels && message.channels.length > 0 && (
+        {channels && channels.length > 0 && (
           <div className="mb-3">
-            <strong>Channels: </strong>
-            {message.channels?.map((channel, index) => (
-              <ChannelBadge key={index} color="info">
-                {channel}
+            <strong>Channels:</strong>
+            <br />
+            {channels.map((channel) => (
+              <ChannelBadge key={channel} color="dark" pill>
+                {channelNames(channel)}
               </ChannelBadge>
             ))}
           </div>
