@@ -1,10 +1,14 @@
 import axios from "axios";
 import { Application, Attempt, Endpoint, EventType, Message } from "../types";
 
-const { REACT_APP_SVIX_API_TOKEN, REACT_APP_SVIX_API_SCHEME, REACT_APP_SVIX_API_PORT } =
-  process.env;
+const {
+  REACT_APP_SVIX_API_TOKEN,
+  REACT_APP_SVIX_API_SCHEME,
+  REACT_APP_SVIX_API_HOST,
+  REACT_APP_SVIX_API_PORT,
+} = process.env;
 
-const { hostname } = window.location;
+const hostname = REACT_APP_SVIX_API_HOST || window.location;
 
 const domain = `${REACT_APP_SVIX_API_SCHEME}://${hostname}:${REACT_APP_SVIX_API_PORT}/`;
 
