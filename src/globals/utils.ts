@@ -1,18 +1,33 @@
-export const channelNames = (channel: string) => {
+import { Channel } from "../types";
+
+export const channelNames = (channel: Channel) => {
   switch (channel) {
-    case "0":
+    case Channel.Public:
       return "Public";
-    case "1":
+    case Channel.Deposits:
       return "Deposits";
-    case "2":
+    case Channel.Withdrawals:
       return "Withdrawals";
-    case "3":
+    case Channel.Authorizations:
       return "Authorizations";
-    case "4":
+    case Channel.Refunds:
       return "Refunds";
-    case "5":
+    case Channel.Domains:
       return "Domains";
     default:
       return "Unknown";
+  }
+};
+
+export const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
+  switch (status) {
+    case 0:
+      return { color: "success", text: "Success" };
+    case 1:
+      return { color: "warning", text: "Pending" };
+    case 2:
+      return { color: "danger", text: "Failed" };
+    case 3:
+      return { color: "info", text: "Sending" };
   }
 };

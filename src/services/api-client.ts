@@ -72,6 +72,46 @@ export const getEndpoint = (applicationId: string, endpointId: string): Promise<
   });
 };
 
+interface EndpointPayload {
+  description: string;
+  url: string;
+  disabled?: boolean;
+  metadata?: Record<string, any>;
+  filterTypes?: string[];
+  channels?: string[];
+  rateLimit?: {
+    window: number;
+    limit: number;
+  };
+}
+
+export const createEndpoint = (
+  applicationId: string,
+  endpoint: EndpointPayload
+): Promise<Endpoint> => {
+  return apiClient
+    .post(`/api/v1/app/${applicationId}/endpoint`, endpoint)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error creating endpoint", error);
+      return null;
+    });
+};
+
+export const editEndpoint = (
+  applicationId: string,
+  endpointId: string,
+  endpoint: EndpointPayload
+): Promise<Endpoint> => {
+  return apiClient
+    .patch(`/api/v1/app/${applicationId}/endpoint/${endpointId}`, endpoint)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error editing endpoint", error);
+      return null;
+    });
+};
+
 export const deleteEndpoint = (applicationId: string, endpointId: string): Promise<void> => {
   return apiClient
     .delete(`/api/v1/app/${applicationId}/endpoint/${endpointId}`)
@@ -169,9 +209,23 @@ export const getEventTypes = (): Promise<EventTypesResponse> => {
     });
 };
 
+export const getEventType = (eventTypeName: string): Promise<EventType> => {
+  return apiClient
+    .get(`/api/v1/event-type/${eventTypeName}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching event type", error);
+      return null;
+    });
+};
+
 interface EventTypePayload {
   name: string;
-  description: string;
+  description?: string;
+  archived?: boolean;
+  deprecated?: boolean;
+  featureFlag?: string;
+  schemas?: Record<string, unknown>;
 }
 
 export const createEventType = (eventType: EventTypePayload): Promise<EventType> => {
@@ -180,6 +234,19 @@ export const createEventType = (eventType: EventTypePayload): Promise<EventType>
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error creating event type", error);
+      return null;
+    });
+};
+
+export const editEventType = (
+  eventTypeName: string,
+  eventType: EventTypePayload
+): Promise<EventType> => {
+  return apiClient
+    .patch(`/api/v1/event-type/${eventTypeName}`, eventType)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error editing event type", error);
       return null;
     });
 };

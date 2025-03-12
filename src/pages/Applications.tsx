@@ -1,9 +1,22 @@
 import { useState, useEffect, FC } from "react";
 import styled from "styled-components";
-import { Button, Col, Input, InputGroup, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  Input,
+  InputGroup,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
 import ApplicationsList from "../components/Applications/ApplicationsList";
 import { Application } from "../types";
 import { getApplications } from "../services/api-client";
+import ApplicationForm from "../components/Applications/ApplicationForm";
+
+const APPLICATION_FORM_ID = "application-form";
 
 const PageHeader = styled.div`
   display: flex;
@@ -19,10 +32,20 @@ const SearchWrapper = styled.div`
 const Applications: FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [applicationModalIsOpen, setApplicationModalIsOpen] = useState<boolean>(false);
 
-  useEffect(() => {
+  const updateApplications = () => {
     getApplications().then(({ data }) => setApplications(data));
-  }, []);
+  };
+
+  useEffect(updateApplications, []);
+
+  const handleApplicationFormSuccess = () => {
+    updateApplications();
+    setApplicationModalIsOpen(false);
+  };
+
+  const toggleApplicationModal = () => setApplicationModalIsOpen((prev) => !prev);
 
   const filteredApplications = applications?.filter(({ name }) =>
     name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,7 +65,9 @@ const Applications: FC = () => {
               />
             </InputGroup>
           </SearchWrapper>
-          <Button color="primary">Create Application</Button>
+          <Button type="button" color="primary" onClick={toggleApplicationModal}>
+            Create Application
+          </Button>
         </div>
       </PageHeader>
 
@@ -51,6 +76,21 @@ const Applications: FC = () => {
           <ApplicationsList applications={filteredApplications} />
         </Col>
       </Row>
+
+      <Modal isOpen={applicationModalIsOpen} toggle={toggleApplicationModal}>
+        <ModalHeader toggle={toggleApplicationModal}>Create Application</ModalHeader>
+        <ModalBody>
+          <ApplicationForm formId={APPLICATION_FORM_ID} onSuccess={handleApplicationFormSuccess} />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleApplicationModal}>
+            Cancel
+          </Button>
+          <Button form={APPLICATION_FORM_ID} type="submit" color="primary">
+            Create
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

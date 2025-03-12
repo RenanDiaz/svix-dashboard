@@ -1,9 +1,22 @@
 import { useState, useEffect, FC, useCallback } from "react";
 import styled from "styled-components";
-import { Button, Col, FormGroup, Input, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  FormGroup,
+  Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
 import EndpointsList from "../components/Endpoints/EndpointsList";
 import { Endpoint, Application } from "../types";
 import { getApplications, getEndpoints } from "../services/api-client";
+import EndpointForm from "../components/Endpoints/EndpointForm";
+
+const ENDPOINT_FORM_ID = "endpoint-form";
 
 const PageHeader = styled.div`
   display: flex;
@@ -21,8 +34,9 @@ const FilterWrapper = styled.div`
 const Endpoints: FC = () => {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedApp, setSelectedApp] = useState<string>("");
+  const [createModalIsOpen, setCreateModalIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     getApplications().then(({ data }) => {
@@ -38,6 +52,13 @@ const Endpoints: FC = () => {
 
   useEffect(updateEndpoints, [updateEndpoints]);
 
+  const toggleCreateModal = () => setCreateModalIsOpen((prev) => !prev);
+
+  const handleCreateSuccess = () => {
+    toggleCreateModal();
+    updateEndpoints();
+  };
+
   const filteredEndpoints = endpoints.filter((endpoint) => {
     const matchesSearch =
       endpoint.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,7 +73,9 @@ const Endpoints: FC = () => {
     <div>
       <PageHeader>
         <h1>Consumers</h1>
-        <Button color="primary">Create Endpoint</Button>
+        <Button color="primary" onClick={toggleCreateModal}>
+          Create Endpoint
+        </Button>
       </PageHeader>
 
       <FilterWrapper>
@@ -84,6 +107,21 @@ const Endpoints: FC = () => {
           />
         </Col>
       </Row>
+
+      <Modal isOpen={createModalIsOpen} toggle={toggleCreateModal}>
+        <ModalHeader toggle={toggleCreateModal}>Create Endpoint</ModalHeader>
+        <ModalBody>
+          <EndpointForm formId={ENDPOINT_FORM_ID} onSuccess={handleCreateSuccess} />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleCreateModal}>
+            Cancel
+          </Button>
+          <Button color="primary" type="submit" form={ENDPOINT_FORM_ID}>
+            Save
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

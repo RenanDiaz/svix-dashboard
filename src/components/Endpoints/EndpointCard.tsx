@@ -7,15 +7,20 @@ import {
   CardBody,
   CardSubtitle,
   CardTitle,
+  Col,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
 } from "reactstrap";
 import { Application, Endpoint } from "../../types";
 import { deleteEndpoint } from "../../services/api-client";
 import { LinkContainer } from "react-router-bootstrap";
 import { channelNames } from "../../globals/utils";
+import EndpointForm from "./EndpointForm";
+
+const ENDPOINT_FORM_ID = "endpoint-form";
 
 interface EndpointCardProps {
   endpoint: Endpoint;
@@ -59,6 +64,7 @@ const AppBadge = styled(Badge)`
 `;
 
 const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndpoints }) => {
+  const [editModalIsOpen, setEditModalIsOpen] = useState<boolean>(false);
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showError, setShowError] = useState<boolean>(false);
@@ -68,9 +74,14 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
     return date.toLocaleString();
   };
 
-  const toggleConfirmDeleteModal = () => {
-    setConfirmDeleteModalIsOpen(!confirmDeleteModalIsOpen);
+  const toggleEditModal = () => setEditModalIsOpen((prev) => !prev);
+
+  const handleEditSuccess = () => {
+    toggleEditModal();
+    updateEndpoints();
   };
+
+  const toggleConfirmDeleteModal = () => setConfirmDeleteModalIsOpen((prev) => !prev);
 
   const confirmDeleteEndpoint = () => {
     if (!application) return;
@@ -93,7 +104,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
     setErrorMessage("");
   };
 
-  const channels = endpoint.channels?.sort((a, b) => a.localeCompare(b)) || undefined;
+  const channels = endpoint.channels?.sort((a, b) => a.localeCompare(b));
 
   return (
     <>
@@ -130,27 +141,57 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
           <DateInfo>Created: {formatDate(endpoint.createdAt)}</DateInfo>
           <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
 
+          <Row>
+            <Col xs="auto">
+              <LinkContainer
+                to={`/applications/${application?.id}/endpoints/${endpoint.id}/attempts`}
+              >
+                <Button color="primary" outline size="sm">
+                  View Attempts
+                </Button>
+              </LinkContainer>
+            </Col>
+            <Col xs="auto">
+              <LinkContainer
+                to={`/applications/${application?.id}/endpoints/${endpoint.id}/messages`}
+              >
+                <Button color="primary" outline size="sm">
+                  View Messages
+                </Button>
+              </LinkContainer>
+            </Col>
+          </Row>
+
           <CardActions>
-            <LinkContainer
-              to={`/applications/${application?.id}/endpoints/${endpoint.id}/attempts`}
-            >
-              <Button color="primary" outline size="sm">
-                View Attempts
-              </Button>
-            </LinkContainer>
-            <LinkContainer
-              to={`/applications/${application?.id}/endpoints/${endpoint.id}/messages`}
-            >
-              <Button color="primary" outline size="sm">
-                View Messages
-              </Button>
-            </LinkContainer>
+            <Button color="primary" outline size="sm" onClick={toggleEditModal}>
+              Edit
+            </Button>
             <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
               Delete
             </Button>
           </CardActions>
         </CardBody>
       </StyledCard>
+
+      <Modal isOpen={editModalIsOpen} toggle={toggleEditModal}>
+        <ModalHeader toggle={toggleEditModal}>Edit Endpoint</ModalHeader>
+        <ModalBody>
+          <EndpointForm
+            formId={ENDPOINT_FORM_ID}
+            endpointId={endpoint.id}
+            applicationId={application?.id}
+            onSuccess={handleEditSuccess}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleEditModal}>
+            Cancel
+          </Button>
+          <Button color="primary" type="submit" form={ENDPOINT_FORM_ID}>
+            Save
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       <Modal isOpen={confirmDeleteModalIsOpen} toggle={toggleConfirmDeleteModal}>
         <ModalHeader toggle={toggleConfirmDeleteModal}>Confirm Delete</ModalHeader>

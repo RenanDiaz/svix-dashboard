@@ -13,6 +13,9 @@ import {
 } from "reactstrap";
 import { EventType } from "../../types";
 import { deleteEventType } from "../../services/api-client";
+import EventTypeForm from "./EventTypeForm";
+
+const EVENT_TYPE_FORM_ID = "event-type-form";
 
 interface EventTypeCardProps {
   eventType: EventType;
@@ -55,11 +58,19 @@ const DetailsWrapper = styled.div`
 `;
 
 const EventTypeCard: FC<EventTypeCardProps> = ({ eventType, updateEventTypes }) => {
+  const [editModalIsOpen, setEditModalIsOpen] = useState<boolean>(false);
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString();
+  };
+
+  const toggleEditModal = () => setEditModalIsOpen((prev) => !prev);
+
+  const handleEditSuccess = () => {
+    toggleEditModal();
+    updateEventTypes();
   };
 
   const toggleConfirmDeleteModal = () => setConfirmDeleteModalIsOpen((prev) => !prev);
@@ -111,7 +122,7 @@ const EventTypeCard: FC<EventTypeCardProps> = ({ eventType, updateEventTypes }) 
 
           <CardActions>
             <div>
-              <Button color="primary" outline size="sm" className="me-2">
+              <Button color="primary" outline size="sm" className="me-2" onClick={toggleEditModal}>
                 Edit
               </Button>
               <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
@@ -124,6 +135,25 @@ const EventTypeCard: FC<EventTypeCardProps> = ({ eventType, updateEventTypes }) 
           </CardActions>
         </CardBody>
       </StyledCard>
+
+      <Modal isOpen={editModalIsOpen} toggle={toggleEditModal}>
+        <ModalHeader toggle={toggleEditModal}>Edit Event Type</ModalHeader>
+        <ModalBody>
+          <EventTypeForm
+            eventTypeName={eventType.name}
+            formId={EVENT_TYPE_FORM_ID}
+            onSuccess={handleEditSuccess}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleEditModal}>
+            Cancel
+          </Button>
+          <Button color="primary" type="submit" form={EVENT_TYPE_FORM_ID}>
+            Save
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       <Modal isOpen={confirmDeleteModalIsOpen} toggle={toggleConfirmDeleteModal}>
         <ModalHeader toggle={toggleConfirmDeleteModal}>Confirm Delete</ModalHeader>

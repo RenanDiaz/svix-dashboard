@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardTitle, Button, Badge } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
-import { channelNames } from "../../globals/utils";
+import { channelNames, getStatusInfo } from "../../globals/utils";
 
 interface MessageCardProps {
   message: Message;
@@ -67,20 +67,6 @@ const StatusBadge = styled(Badge)<{ $statusType: "success" | "warning" | "danger
   margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-// Helper function to determine status badge color and text
-const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
-  switch (status) {
-    case 0:
-      return { color: "success", text: "Success" };
-    case 1:
-      return { color: "warning", text: "Pending" };
-    case 2:
-      return { color: "danger", text: "Failed" };
-    case 3:
-      return { color: "info", text: "Sending" };
-  }
-};
-
 const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -92,7 +78,7 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
       ? getStatusInfo(message.status)
       : { color: "info", text: "No status" };
 
-  const channels = message.channels?.sort((a, b) => a.localeCompare(b)) || undefined;
+  const channels = message.channels?.sort((a, b) => a.localeCompare(b));
 
   return (
     <StyledCard>
