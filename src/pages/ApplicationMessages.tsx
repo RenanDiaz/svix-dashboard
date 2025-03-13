@@ -21,7 +21,8 @@ const ApplicationMessages: FC = () => {
   const { applicationId } = useParams<{ applicationId: string }>();
   const [application, setApplication] = useState<Application>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [alreadyFetched, setAlreadyFetched] = useState<boolean>(false);
 
   useEffect(() => {
     if (!applicationId) return;
@@ -30,7 +31,9 @@ const ApplicationMessages: FC = () => {
 
   const updateMessages = useCallback(() => {
     if (!application) return;
-    getMessages(application.id).then(({ data }) => setMessages(data));
+    getMessages(application.id)
+      .then(({ data }) => setMessages(data))
+      .finally(() => setAlreadyFetched(true));
   }, [application]);
 
   useEffect(updateMessages, [updateMessages]);
@@ -61,7 +64,7 @@ const ApplicationMessages: FC = () => {
 
       <Row>
         <Col>
-          <MessagesList messages={filteredMessages} />
+          <MessagesList messages={filteredMessages} alreadyFetched={alreadyFetched} />
         </Col>
       </Row>
     </div>

@@ -1,5 +1,6 @@
 import { FC, FormEvent, useState } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
+import { createApplication } from "../../services/api-client";
 
 interface ApplicationFormProps {
   formId: string;
@@ -11,6 +12,12 @@ const ApplicationForm: FC<ApplicationFormProps> = ({ formId, onSuccess }) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    createApplication(name).then((application) => {
+      if (application) {
+        onSuccess();
+        setName("");
+      }
+    });
   };
 
   return (

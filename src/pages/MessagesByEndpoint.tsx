@@ -22,7 +22,8 @@ const MessagesByEndpoint: FC = () => {
   const [application, setApplication] = useState<Application>();
   const [endpoint, setEndpoint] = useState<Endpoint>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [alreadyFetched, setAlreadyFetched] = useState<boolean>(false);
 
   useEffect(() => {
     if (!applicationId) return;
@@ -31,7 +32,9 @@ const MessagesByEndpoint: FC = () => {
 
   useEffect(() => {
     if (!applicationId || !endpointId) return;
-    getEndpoint(applicationId, endpointId).then((data) => setEndpoint(data));
+    getEndpoint(applicationId, endpointId)
+      .then((data) => setEndpoint(data))
+      .finally(() => setAlreadyFetched(true));
   }, [applicationId, endpointId]);
 
   const updateMessages = useCallback(() => {
@@ -70,7 +73,11 @@ const MessagesByEndpoint: FC = () => {
 
       <Row>
         <Col>
-          <MessagesList messages={filteredMessages} application={application} />
+          <MessagesList
+            messages={filteredMessages}
+            alreadyFetched={alreadyFetched}
+            application={application}
+          />
         </Col>
       </Row>
     </div>

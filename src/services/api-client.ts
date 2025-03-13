@@ -10,7 +10,9 @@ const {
 
 const hostname = REACT_APP_SVIX_API_HOST || window.location;
 
-const domain = `${REACT_APP_SVIX_API_SCHEME}://${hostname}:${REACT_APP_SVIX_API_PORT}/`;
+const domain = `${REACT_APP_SVIX_API_SCHEME}://${hostname}${
+  REACT_APP_SVIX_API_PORT ? `:${REACT_APP_SVIX_API_PORT}` : ""
+}`;
 
 const apiClient = axios.create({
   baseURL: domain,
@@ -43,6 +45,16 @@ export const getApplication = (applicationId: string): Promise<Application> => {
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching application", error);
+      return null;
+    });
+};
+
+export const createApplication = (name: string): Promise<Application> => {
+  return apiClient
+    .post("/api/v1/app", { name })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error creating application", error);
       return null;
     });
 };
@@ -144,6 +156,21 @@ export const getMessage = (messageId: string): Promise<Message> => {
     if (response.status === 200) return response.data;
     throw new Error(response.statusText);
   });
+};
+
+export const createMessage = (
+  applicationId: string,
+  eventType: string,
+  payload: Record<string, unknown>,
+  channels: string[]
+): Promise<Message> => {
+  return apiClient
+    .post(`/api/v1/app/${applicationId}/msg`, { eventType, payload, channels })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error creating message", error);
+      return null;
+    });
 };
 
 export const getMessagesByEndpoint = (

@@ -6,6 +6,7 @@ import MessageCard from "./MessageCard";
 
 interface MessagesListProps {
   messages: Message[];
+  alreadyFetched: boolean;
   application?: Application;
 }
 
@@ -17,7 +18,15 @@ const EmptyState = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.card};
 `;
 
-const MessagesList: FC<MessagesListProps> = ({ messages, application }) => {
+const MessagesList: FC<MessagesListProps> = ({ messages, alreadyFetched, application }) => {
+  if (!alreadyFetched) {
+    return (
+      <EmptyState>
+        <h3>Loading...</h3>
+      </EmptyState>
+    );
+  }
+
   if (messages.length === 0) {
     return (
       <EmptyState>
