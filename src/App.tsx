@@ -13,6 +13,7 @@ import MessagesByEndpoint from "./pages/MessagesByEndpoint";
 import AttemptsByEndpoint from "./pages/AttemptsByEndpoint";
 import AttemptsByMessage from "./pages/AttemptsByMessage";
 import EventTypes from "./pages/EventTypes";
+import EndpointDetailView from "./pages/EndpointDetailView";
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,10 @@ const App: React.FC = () => {
             <Route
               path="/applications/:applicationId/endpoints"
               element={<ApplicationEndpoints />}
+            />
+            <Route
+              path="/applications/:applicationId/endpoints/:endpointId"
+              element={<EndpointDetailView />}
             />
             <Route
               path="/applications/:applicationId/endpoints/:endpointId/attempts"

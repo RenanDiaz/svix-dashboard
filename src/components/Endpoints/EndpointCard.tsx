@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   Badge,
@@ -14,8 +14,8 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Application, Endpoint } from "../../types";
-import { deleteEndpoint } from "../../services/api-client";
+import { Application, Endpoint, EndpointStats } from "../../types";
+import { deleteEndpoint, getEndpointStats } from "../../services/api-client";
 import { LinkContainer } from "react-router-bootstrap";
 import { channelNames } from "../../globals/utils";
 import EndpointForm from "./EndpointForm";
@@ -68,6 +68,12 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showError, setShowError] = useState<boolean>(false);
+  const [deliveryStats, setDeliveryStats] = useState<EndpointStats>();
+
+  useEffect(() => {
+    if (!application) return;
+    getEndpointStats(application.id, endpoint.id).then((data) => setDeliveryStats(data));
+  }, [application, endpoint]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -106,6 +112,13 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
 
   const channels = endpoint.channels?.sort((a, b) => a.localeCompare(b));
 
+  const totalAttempts = Object.values(deliveryStats || {}).reduce(
+    (acc, val) => acc + (val || 0),
+    0
+  );
+
+  const errorRate = (deliveryStats?.fail || 0) / totalAttempts || 0;
+
   return (
     <>
       <StyledCard>
@@ -141,13 +154,35 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
           <DateInfo>Created: {formatDate(endpoint.createdAt)}</DateInfo>
           <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
 
+          <Row className="align-items-center mb-3">
+            <Col xs="auto">
+              <CardSubtitle tag="h6" className="m-0 text-muted">
+                Error rate:
+              </CardSubtitle>
+            </Col>
+            <Col xs="auto">
+              {deliveryStats ? (
+                <Badge color={errorRate > 0.1 ? "danger" : "success"}>{errorRate * 100}%</Badge>
+              ) : (
+                <Badge color="danger">N/A</Badge>
+              )}
+            </Col>
+          </Row>
+
           <Row>
+            <Col xs="auto">
+              <LinkContainer to={`/applications/${application?.id}/endpoints/${endpoint.id}`}>
+                <Button color="primary" outline size="sm">
+                  Details
+                </Button>
+              </LinkContainer>
+            </Col>
             <Col xs="auto">
               <LinkContainer
                 to={`/applications/${application?.id}/endpoints/${endpoint.id}/attempts`}
               >
                 <Button color="primary" outline size="sm">
-                  View Attempts
+                  Attempts
                 </Button>
               </LinkContainer>
             </Col>
@@ -156,7 +191,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
                 to={`/applications/${application?.id}/endpoints/${endpoint.id}/messages`}
               >
                 <Button color="primary" outline size="sm">
-                  View Messages
+                  Messages
                 </Button>
               </LinkContainer>
             </Col>

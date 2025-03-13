@@ -57,6 +57,10 @@ export interface Attempt {
   timestamp: string;
 }
 
+export interface AttemptWithMessage extends Attempt {
+  msg: Message;
+}
+
 export interface EventType {
   name: string;
   description: string;
@@ -66,4 +70,11 @@ export interface EventType {
   createdAt: string;
   updatedAt: string;
   featureFlag?: string;
+}
+
+export interface EndpointStats {
+  success: number;
+  pending: number;
+  sending: number;
+  fail: number;
 }

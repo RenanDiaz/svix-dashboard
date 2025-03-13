@@ -1,5 +1,13 @@
 import axios from "axios";
-import { Application, Attempt, Endpoint, EventType, Message } from "../types";
+import {
+  Application,
+  Attempt,
+  AttemptWithMessage,
+  Endpoint,
+  EndpointStats,
+  EventType,
+  Message,
+} from "../types";
 
 const {
   REACT_APP_SVIX_API_TOKEN,
@@ -206,12 +214,21 @@ export const getAttemptsByMessage = (
     });
 };
 
+interface AttemptsWithMessageResponse {
+  data: AttemptWithMessage[];
+  iterator: string;
+  prevIterator: string;
+  done: boolean;
+  message: Message;
+}
+
 export const getAttemptsByEndpoint = (
   applicationId: string,
   endpointId: string
-): Promise<AttemptsResponse> => {
+): Promise<AttemptsWithMessageResponse> => {
+  const searchParams = new URLSearchParams({ with_msg: "true" });
   return apiClient
-    .get(`/api/v1/app/${applicationId}/attempt/endpoint/${endpointId}`)
+    .get(`/api/v1/app/${applicationId}/attempt/endpoint/${endpointId}?${searchParams}`)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching attempts", error);
@@ -284,5 +301,18 @@ export const deleteEventType = (eventTypeName: string): Promise<void> => {
     .then(() => {})
     .catch((error) => {
       console.error("Error deleting event type", error);
+    });
+};
+
+export const getEndpointStats = (
+  applicationId: string,
+  endpointId: string
+): Promise<EndpointStats> => {
+  return apiClient
+    .get(`/api/v1/app/${applicationId}/endpoint/${endpointId}/stats`)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error fetching endpoint stats", error);
+      return null;
     });
 };
