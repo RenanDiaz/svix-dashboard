@@ -22,6 +22,7 @@ const ApplicationEndpoints: FC = () => {
   const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
   const [application, setApplication] = useState<Application>();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [alreadyFetched, setAlreadyFetched] = useState<boolean>(false);
 
   useEffect(() => {
     if (!applicationId) return;
@@ -30,7 +31,9 @@ const ApplicationEndpoints: FC = () => {
 
   const updateEndpoints = useCallback(() => {
     if (!application) return;
-    getEndpoints(application.id).then(({ data }) => setEndpoints(data));
+    getEndpoints(application.id)
+      .then(({ data }) => setEndpoints(data))
+      .finally(() => setAlreadyFetched(true));
   }, [application]);
 
   useEffect(updateEndpoints, [updateEndpoints]);
@@ -65,6 +68,7 @@ const ApplicationEndpoints: FC = () => {
         <Col>
           <EndpointsList
             endpoints={filteredEndpoints}
+            alreadyFetched={alreadyFetched}
             application={application}
             updateEndpoints={updateEndpoints}
           />

@@ -33,9 +33,12 @@ const EventTypes: FC = () => {
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [createEventTypeModalOpen, setCreateEventTypeModalOpen] = useState<boolean>(false);
+  const [alreadyFetched, setAlreadyFetched] = useState<boolean>(false);
 
   const updateEventTypes = () => {
-    getEventTypes().then(({ data }) => setEventTypes(data));
+    getEventTypes()
+      .then(({ data }) => setEventTypes(data))
+      .finally(() => setAlreadyFetched(true));
   };
 
   useEffect(updateEventTypes, []);
@@ -77,7 +80,11 @@ const EventTypes: FC = () => {
 
       <Row>
         <Col>
-          <EventTypesList eventTypes={filteredEventTypes} updateEventTypes={updateEventTypes} />
+          <EventTypesList
+            eventTypes={filteredEventTypes}
+            alreadyFetched={alreadyFetched}
+            updateEventTypes={updateEventTypes}
+          />
         </Col>
       </Row>
 

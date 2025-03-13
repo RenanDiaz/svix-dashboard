@@ -33,9 +33,12 @@ const Applications: FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [applicationModalIsOpen, setApplicationModalIsOpen] = useState<boolean>(false);
+  const [alreadyFetched, setAlreadyFetched] = useState<boolean>(false);
 
   const updateApplications = () => {
-    getApplications().then(({ data }) => setApplications(data));
+    getApplications()
+      .then(({ data }) => setApplications(data))
+      .finally(() => setAlreadyFetched(true));
   };
 
   useEffect(updateApplications, []);
@@ -73,7 +76,7 @@ const Applications: FC = () => {
 
       <Row>
         <Col>
-          <ApplicationsList applications={filteredApplications} />
+          <ApplicationsList applications={filteredApplications} alreadyFetched={alreadyFetched} />
         </Col>
       </Row>
 

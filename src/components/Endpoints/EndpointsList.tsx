@@ -5,6 +5,7 @@ import EndpointCard from "./EndpointCard";
 
 interface EndpointsListProps {
   endpoints: Endpoint[];
+  alreadyFetched: boolean;
   application?: Application;
   updateEndpoints: () => void;
 }
@@ -23,7 +24,20 @@ const CardsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const EndpointsList: FC<EndpointsListProps> = ({ endpoints, application, updateEndpoints }) => {
+const EndpointsList: FC<EndpointsListProps> = ({
+  endpoints,
+  alreadyFetched,
+  application,
+  updateEndpoints,
+}) => {
+  if (!alreadyFetched) {
+    return (
+      <EmptyState>
+        <h3>Loading...</h3>
+      </EmptyState>
+    );
+  }
+
   if (endpoints.length === 0) {
     return (
       <EmptyState>

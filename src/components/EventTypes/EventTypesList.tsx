@@ -5,6 +5,7 @@ import EventTypeCard from "./EventTypeCard";
 
 interface EventTypesListProps {
   eventTypes: EventType[];
+  alreadyFetched: boolean;
   updateEventTypes: () => void;
 }
 
@@ -22,7 +23,19 @@ const CardsContainer = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
 `;
 
-const EventTypesList: FC<EventTypesListProps> = ({ eventTypes, updateEventTypes }) => {
+const EventTypesList: FC<EventTypesListProps> = ({
+  eventTypes,
+  alreadyFetched,
+  updateEventTypes,
+}) => {
+  if (!alreadyFetched) {
+    return (
+      <EmptyState>
+        <h3>Loading...</h3>
+      </EmptyState>
+    );
+  }
+
   if (eventTypes.length === 0) {
     return (
       <EmptyState>

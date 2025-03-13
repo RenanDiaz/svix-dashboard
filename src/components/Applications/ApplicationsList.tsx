@@ -6,6 +6,7 @@ import { Application } from "../../types";
 
 interface ApplicationsListProps {
   applications: Application[];
+  alreadyFetched: boolean;
 }
 
 const EmptyState = styled.div`
@@ -16,7 +17,15 @@ const EmptyState = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.card};
 `;
 
-const ApplicationsList: FC<ApplicationsListProps> = ({ applications }) => {
+const ApplicationsList: FC<ApplicationsListProps> = ({ applications, alreadyFetched }) => {
+  if (!alreadyFetched) {
+    return (
+      <EmptyState>
+        <h3>Loading...</h3>
+      </EmptyState>
+    );
+  }
+
   if (applications.length === 0) {
     return (
       <EmptyState>
