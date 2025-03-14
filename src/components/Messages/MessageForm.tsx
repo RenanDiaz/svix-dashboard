@@ -12,8 +12,7 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { Application, Channel, EventType } from "../../types";
-import { channelNames } from "../../globals/utils";
+import { Application, EventType } from "../../types";
 import { createMessage, getApplications, getEventTypes } from "../../services/api-client";
 import styled from "styled-components";
 
@@ -36,7 +35,7 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
   const [selectedApp, setSelectedApp] = useState<string>("");
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [selectedEventType, setSelectedEventType] = useState<string>("");
-  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
+  const [channels, setChannels] = useState<string[]>([""]);
   const [fields, setFields] = useState<Field[]>([{ key: "", value: "" }]);
   const [fieldsString, setFieldsString] = useState<string>("");
   const [showFieldsAsString, setShowFieldsAsString] = useState<boolean>(false);
@@ -65,6 +64,8 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
             key,
             value: value as string,
           }));
+    const filteredChannels = channels.filter((channel) => !!channel);
+    const selectedChannels = filteredChannels.length > 0 ? filteredChannels : undefined;
     createMessage(selectedApp, selectedEventType, payload, selectedChannels)
       .then(onSuccess)
       .catch((err) => {
@@ -72,7 +73,17 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
       });
   };
 
-  const addField = () => {
+  const handleAddChannel = () => {
+    setChannels([...channels, ""]);
+  };
+
+  const handleChannelChange = (index: number, value: string) => {
+    const newChannels = [...channels];
+    newChannels[index] = value;
+    setChannels(newChannels);
+  };
+
+  const handleAddfield = () => {
     setFields([...fields, { key: "", value: "" }]);
   };
 
@@ -102,7 +113,13 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
     setShowFieldsAsString((prev) => !prev);
   };
 
+  const handleBeautifyFields = () => {
+    setFieldsString(JSON.stringify(JSON.parse(fieldsString), null, 2));
+  };
+
   const togglePreview = () => setShowPreview((prev) => !prev);
+
+  const filteredChannels = channels.filter((channel) => !!channel);
 
   return (
     <>
@@ -159,33 +176,36 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
           <Card className="mb-3">
             <CardHeader>Channels</CardHeader>
             <CardBody>
-              {Object.values(Channel).map((channel) => (
-                <FormGroup check key={channel}>
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      checked={selectedChannels.includes(channel)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedChannels([...selectedChannels, channel]);
-                        } else {
-                          setSelectedChannels(selectedChannels.filter((c) => c !== channel));
-                        }
-                      }}
-                    />
-                    {channelNames(channel)}
-                  </Label>
+              {channels.map((channel, index) => (
+                <FormGroup key={index}>
+                  <Input
+                    type="text"
+                    name="channel"
+                    id="channel"
+                    value={channel}
+                    onChange={(e) => handleChannelChange(index, e.target.value)}
+                  />
                 </FormGroup>
               ))}
+              <Button type="button" color="primary" size="sm" onClick={handleAddChannel}>
+                Add channel
+              </Button>
             </CardBody>
           </Card>
 
           <Card className="mb-3">
             <CardHeader>
-              <Row>
+              <Row className="gx-0">
                 <Col>Payload</Col>
+                {showFieldsAsString && (
+                  <Col xs="auto">
+                    <Button type="button" color="link" size="sm" onClick={handleBeautifyFields}>
+                      Beautify
+                    </Button>
+                  </Col>
+                )}
                 <Col xs="auto">
-                  <Button type="button" color="primary" size="sm" onClick={toggleFieldsAsString}>
+                  <Button type="button" color="link" size="sm" onClick={toggleFieldsAsString}>
                     {showFieldsAsString ? "Show form" : "Show as string"}
                   </Button>
                 </Col>
@@ -205,8 +225,12 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
               ) : (
                 <>
                   <Row>
-                    <Col>Key</Col>
-                    <Col>Value</Col>
+                    <Col>
+                      <Label for="key">Key</Label>
+                    </Col>
+                    <Col>
+                      <Label for="value">Value</Label>
+                    </Col>
                   </Row>
                   {fields.map(({ key, value }, index) => (
                     <Row key={index}>
@@ -215,7 +239,7 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
                           <Input
                             type="text"
                             name="key"
-                            id="key"
+                            id={`key-${index}`}
                             value={key}
                             onChange={(e) => {
                               const newPayload = [...fields];
@@ -230,7 +254,7 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
                           <Input
                             type="text"
                             name="value"
-                            id="value"
+                            id={`value-${index}`}
                             value={value}
                             onChange={(e) => {
                               const newPayload = [...fields];
@@ -242,7 +266,7 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
                       </Col>
                     </Row>
                   ))}
-                  <Button type="button" color="primary" onClick={addField}>
+                  <Button type="button" color="primary" size="sm" onClick={handleAddfield}>
                     Add field
                   </Button>
                 </>
@@ -265,7 +289,7 @@ const MessageForm: FC<MessageFormProps> = ({ formId, onSuccess }) => {
               {JSON.stringify(
                 {
                   eventType: selectedEventType,
-                  channels: selectedChannels,
+                  channels: filteredChannels.length > 0 ? filteredChannels : undefined,
                   payload: fields
                     .filter(({ key, value }) => key && value)
                     .reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {}),

@@ -1,13 +1,23 @@
 import { FC, useEffect, useState } from "react";
-import { Card, CardBody, CardHeader, Form, FormGroup, Input, Label } from "reactstrap";
-import { Application, Channel } from "../../types";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+} from "reactstrap";
+import { Application } from "../../types";
 import {
   createEndpoint,
   editEndpoint,
   getApplications,
   getEndpoint,
 } from "../../services/api-client";
-import { channelNames } from "../../globals/utils";
 
 interface EndpointFormProps {
   applicationId?: string;
@@ -68,6 +78,16 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
     }
   };
 
+  const handleAddChannel = () => {
+    setChannels([...channels, ""]);
+  };
+
+  const handleChannelChange = (index: number, value: string) => {
+    const newChannels = [...channels];
+    newChannels[index] = value;
+    setChannels(newChannels);
+  };
+
   return (
     <Form id={formId} onSubmit={handleSubmit}>
       <FormGroup floating>
@@ -117,24 +137,24 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
         <Label for="url">URL</Label>
       </FormGroup>
       <Card>
-        <CardHeader>Channels</CardHeader>
+        <CardHeader>
+          <Row>
+            <Col>Channels</Col>
+            <Col xs="auto">
+              <Button color="primary" size="sm" onClick={handleAddChannel}>
+                Add Channel
+              </Button>
+            </Col>
+          </Row>
+        </CardHeader>
         <CardBody>
-          {Object.values(Channel).map((channel) => (
-            <FormGroup check key={channel}>
-              <Label check>
-                <Input
-                  type="checkbox"
-                  checked={channels.includes(channel)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setChannels([...channels, channel]);
-                    } else {
-                      setChannels(channels.filter((c) => c !== channel));
-                    }
-                  }}
-                />
-                {channelNames(channel)}
-              </Label>
+          {channels.map((channel, index) => (
+            <FormGroup key={index}>
+              <Input
+                type="text"
+                value={channel}
+                onChange={(e) => handleChannelChange(index, e.target.value)}
+              />
             </FormGroup>
           ))}
         </CardBody>

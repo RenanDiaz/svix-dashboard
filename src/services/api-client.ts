@@ -170,7 +170,7 @@ export const createMessage = (
   applicationId: string,
   eventType: string,
   payload: Record<string, unknown>,
-  channels: string[]
+  channels?: string[]
 ): Promise<Message> => {
   return apiClient
     .post(`/api/v1/app/${applicationId}/msg`, { eventType, payload, channels })

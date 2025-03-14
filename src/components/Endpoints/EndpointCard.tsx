@@ -17,7 +17,6 @@ import {
 import { Application, Endpoint, EndpointStats } from "../../types";
 import { deleteEndpoint, getEndpointStats } from "../../services/api-client";
 import { LinkContainer } from "react-router-bootstrap";
-import { channelNames } from "../../globals/utils";
 import EndpointForm from "./EndpointForm";
 
 const ENDPOINT_FORM_ID = "endpoint-form";
@@ -140,7 +139,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
               <div className="mb-3">
                 {channels.map((channel) => (
                   <Badge key={channel} color="dark" className="me-1" pill>
-                    {channelNames(channel)}
+                    {channel}
                   </Badge>
                 ))}
               </div>

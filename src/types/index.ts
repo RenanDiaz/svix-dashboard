@@ -6,15 +6,6 @@ export interface Application {
   updatedAt: string;
 }
 
-export enum Channel {
-  Public = "0",
-  Deposits = "1",
-  Withdrawals = "2",
-  Authorizations = "3",
-  Refunds = "4",
-  Domains = "5",
-}
-
 export interface Endpoint {
   id: string;
   url: string;
@@ -25,7 +16,7 @@ export interface Endpoint {
   disabled: boolean;
   metadata: Record<string, any>;
   filterTypes: string[] | null;
-  channels?: Channel[];
+  channels?: string[];
   rateLimit: {
     window: number;
     limit: number;
@@ -37,7 +28,7 @@ export interface Message {
   eventId: string;
   eventType: string;
   payload: object;
-  channels?: Channel[];
+  channels?: string[];
   id: string;
   timestamp: string;
   status?: 0 | 1 | 2 | 3;

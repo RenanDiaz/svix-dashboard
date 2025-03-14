@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardTitle, Button, Badge } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
-import { channelNames, getStatusInfo } from "../../globals/utils";
+import { getStatusInfo } from "../../globals/utils";
 
 interface MessageCardProps {
   message: Message;
@@ -110,7 +110,7 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
             <br />
             {channels.map((channel) => (
               <ChannelBadge key={channel} color="dark" pill>
-                {channelNames(channel)}
+                {channel}
               </ChannelBadge>
             ))}
           </div>

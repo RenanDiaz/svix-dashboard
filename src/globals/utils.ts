@@ -1,24 +1,3 @@
-import { Channel } from "../types";
-
-export const channelNames = (channel: Channel) => {
-  switch (channel) {
-    case Channel.Public:
-      return "Public";
-    case Channel.Deposits:
-      return "Deposits";
-    case Channel.Withdrawals:
-      return "Withdrawals";
-    case Channel.Authorizations:
-      return "Authorizations";
-    case Channel.Refunds:
-      return "Refunds";
-    case Channel.Domains:
-      return "Domains";
-    default:
-      return "Unknown";
-  }
-};
-
 export const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
   switch (status) {
     case 0:
