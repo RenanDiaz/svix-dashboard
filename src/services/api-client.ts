@@ -132,6 +132,16 @@ export const editEndpoint = (
     });
 };
 
+export const disableEndpoint = (applicationId: string, endpointId: string): Promise<Endpoint> => {
+  return apiClient
+    .patch(`/api/v1/app/${applicationId}/endpoint/${endpointId}`, { disabled: true })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error("Error disabling endpoint", error);
+      return null;
+    });
+};
+
 export const deleteEndpoint = (applicationId: string, endpointId: string): Promise<void> => {
   return apiClient
     .delete(`/api/v1/app/${applicationId}/endpoint/${endpointId}`)
@@ -314,5 +324,111 @@ export const getEndpointStats = (
     .catch((error) => {
       console.error("Error fetching endpoint stats", error);
       return null;
+    });
+};
+
+interface ResendMessageResponse {
+  success: boolean;
+  message?: string;
+}
+
+export const resendMessage = (
+  applicationId: string,
+  endpointId: string,
+  messageId: string
+): Promise<ResendMessageResponse> => {
+  return apiClient
+    .post<void>(`/api/v1/app/${applicationId}/msg/${messageId}/endpoint/${endpointId}/resend`)
+    .then((response) => {
+      if (response.status === 202) {
+        return { success: true };
+      }
+      throw new Error(response.statusText);
+    })
+    .catch((error) => {
+      console.error("Error resending message", error);
+      const responseBody = error.response?.data;
+      if (responseBody && "code" in responseBody && "detail" in responseBody) {
+        return { success: false, message: responseBody.detail };
+      }
+      return { success: false, message: error.message };
+    });
+};
+
+interface RecoverEndpointResponse {
+  id: string;
+  status: string;
+  task: string;
+}
+
+export const recoverEndpoint = (
+  applicationId: string,
+  endpointId: string,
+  since: string,
+  until: string
+): Promise<ResendMessageResponse> => {
+  return apiClient
+    .post<RecoverEndpointResponse>(`/api/v1/app/${applicationId}/endpoint/${endpointId}/recover`, {
+      since,
+      until,
+    })
+    .then((response) => {
+      if (response.status === 202) {
+        return response.data;
+      }
+      throw new Error(response.statusText);
+    })
+    .then((response) => {
+      if (response.status === "running") {
+        return { success: true };
+      }
+      throw new Error(response.status);
+    })
+    .catch((error) => {
+      console.error("Error recovering endpoint", error);
+      const responseBody = error.response?.data;
+      if (responseBody && "code" in responseBody && "detail" in responseBody) {
+        return { success: false, message: responseBody.detail };
+      }
+      return { success: false, message: error.message };
+    });
+};
+
+interface ReplayMissingResponse {
+  id: string;
+  status: string;
+  task: string;
+}
+
+export const replayMissing = (
+  applicationId: string,
+  endpointId: string,
+  since: string,
+  until: string
+): Promise<ResendMessageResponse> => {
+  return apiClient
+    .post<ReplayMissingResponse>(
+      `/api/v1/app/${applicationId}/endpoint/${endpointId}/replay-missing`,
+      { since, until }
+    )
+    .then((response) => {
+      if (response.status === 202) {
+        return response.data;
+      }
+      throw new Error(response.statusText);
+    })
+    .then((response) => {
+      if (response.status === "running") {
+        return { success: true };
+      }
+      throw new Error(response.status);
+    })
+    .catch((error) => {
+      console.error("Error replaying missing", error);
+      const responseBody = error.response?.data;
+      if (responseBody && "code" in responseBody && "detail" in responseBody) {
+        return { success: false, message: responseBody.detail };
+      }
+      return { success: false, message: error.message };
     });
 };

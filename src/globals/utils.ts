@@ -10,3 +10,13 @@ export const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
       return { color: "info", text: "Sending" };
   }
 };
+
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
+};
+
+export const formatDatetime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString();
+};

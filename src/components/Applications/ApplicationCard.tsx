@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Button, Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { Application } from "../../types";
+import { formatDate } from "../../globals/utils";
 
 interface ApplicationCardProps {
   application: Application;
@@ -40,11 +41,6 @@ const DateInfo = styled.div`
 `;
 
 const ApplicationCard: FC<ApplicationCardProps> = ({ application }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
-
   return (
     <StyledCard>
       <CardBody>

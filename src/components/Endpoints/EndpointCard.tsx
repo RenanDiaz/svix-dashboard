@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardSubtitle,
   CardTitle,
   Col,
@@ -15,9 +16,11 @@ import {
   Row,
 } from "reactstrap";
 import { Application, Endpoint, EndpointStats } from "../../types";
-import { deleteEndpoint, getEndpointStats } from "../../services/api-client";
+import { deleteEndpoint, disableEndpoint, getEndpointStats } from "../../services/api-client";
 import { LinkContainer } from "react-router-bootstrap";
 import EndpointForm from "./EndpointForm";
+import { NumericFormat } from "react-number-format";
+import { formatDatetime } from "../../globals/utils";
 
 const ENDPOINT_FORM_ID = "endpoint-form";
 
@@ -34,12 +37,6 @@ const StyledCard = styled(Card)`
   &:hover {
     transform: translateY(-5px);
   }
-`;
-
-const CardActions = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
 const EndpointUrl = styled.div`
@@ -64,6 +61,7 @@ const AppBadge = styled(Badge)`
 
 const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndpoints }) => {
   const [editModalIsOpen, setEditModalIsOpen] = useState<boolean>(false);
+  const [confirmDisableModalIsOpen, setConfirmDisableModalIsOpen] = useState<boolean>(false);
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showError, setShowError] = useState<boolean>(false);
@@ -74,16 +72,26 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
     getEndpointStats(application.id, endpoint.id).then((data) => setDeliveryStats(data));
   }, [application, endpoint]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
   const toggleEditModal = () => setEditModalIsOpen((prev) => !prev);
 
   const handleEditSuccess = () => {
     toggleEditModal();
     updateEndpoints();
+  };
+
+  const toggleConfirmDisableModal = () => setConfirmDisableModalIsOpen((prev) => !prev);
+
+  const confirmDisableEndpoint = () => {
+    if (!application) return;
+    disableEndpoint(application.id, endpoint.id)
+      .then(() => {
+        updateEndpoints();
+        toggleConfirmDisableModal();
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setShowError(true);
+      });
   };
 
   const toggleConfirmDeleteModal = () => setConfirmDeleteModalIsOpen((prev) => !prev);
@@ -122,10 +130,49 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
     <>
       <StyledCard>
         <CardBody>
-          <CardTitle tag="h5">{endpoint.description}</CardTitle>
+          <Row className="gx-1">
+            <Col>
+              <CardTitle tag="h5">{endpoint.description}</CardTitle>
+            </Col>
+            <Col xs="auto">
+              <Badge color="secondary" pill>
+                v{endpoint.version}
+              </Badge>
+            </Col>
+            {endpoint.disabled && (
+              <Col xs="auto">
+                <Badge color="danger" pill className="mb-2">
+                  Disabled
+                </Badge>
+              </Col>
+            )}
+          </Row>
           <CardSubtitle tag="h6" className="mb-2 text-muted">
             ID: {endpoint.id}
           </CardSubtitle>
+
+          <Row className="align-items-center">
+            <Col xs="auto">
+              <CardSubtitle tag="h6" className="m-0 text-muted">
+                Error rate:
+              </CardSubtitle>
+            </Col>
+            <Col xs="auto">
+              {deliveryStats ? (
+                <Badge color={errorRate > 0.1 ? "danger" : "success"} pill>
+                  <NumericFormat
+                    displayType="text"
+                    decimalScale={1}
+                    fixedDecimalScale={true}
+                    value={errorRate * 100}
+                    suffix="%"
+                  />
+                </Badge>
+              ) : (
+                <Badge color="danger">N/A</Badge>
+              )}
+            </Col>
+          </Row>
 
           <AppBadge color="info">{application?.name}</AppBadge>
 
@@ -145,33 +192,18 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
               </div>
             </>
           )}
+        </CardBody>
 
-          <div className="mb-3">
-            <Badge color="secondary">Version {endpoint.version}</Badge>
-          </div>
+        <CardFooter className="border-0 bg-body">
+          <DateInfo>Created: {formatDatetime(endpoint.createdAt)}</DateInfo>
+          <DateInfo>Updated: {formatDatetime(endpoint.updatedAt)}</DateInfo>
+        </CardFooter>
 
-          <DateInfo>Created: {formatDate(endpoint.createdAt)}</DateInfo>
-          <DateInfo>Updated: {formatDate(endpoint.updatedAt)}</DateInfo>
-
-          <Row className="align-items-center mb-3">
-            <Col xs="auto">
-              <CardSubtitle tag="h6" className="m-0 text-muted">
-                Error rate:
-              </CardSubtitle>
-            </Col>
-            <Col xs="auto">
-              {deliveryStats ? (
-                <Badge color={errorRate > 0.1 ? "danger" : "success"}>{errorRate * 100}%</Badge>
-              ) : (
-                <Badge color="danger">N/A</Badge>
-              )}
-            </Col>
-          </Row>
-
-          <Row>
+        <CardFooter className="border-0 bg-body">
+          <Row className="justify-content-between gx-1 mb-3">
             <Col xs="auto">
               <LinkContainer to={`/applications/${application?.id}/endpoints/${endpoint.id}`}>
-                <Button color="primary" outline size="sm">
+                <Button color="primary" size="sm">
                   Details
                 </Button>
               </LinkContainer>
@@ -180,7 +212,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
               <LinkContainer
                 to={`/applications/${application?.id}/endpoints/${endpoint.id}/attempts`}
               >
-                <Button color="primary" outline size="sm">
+                <Button color="primary" size="sm">
                   Attempts
                 </Button>
               </LinkContainer>
@@ -189,22 +221,32 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
               <LinkContainer
                 to={`/applications/${application?.id}/endpoints/${endpoint.id}/messages`}
               >
-                <Button color="primary" outline size="sm">
+                <Button color="primary" size="sm">
                   Messages
                 </Button>
               </LinkContainer>
             </Col>
           </Row>
 
-          <CardActions>
-            <Button color="primary" outline size="sm" onClick={toggleEditModal}>
-              Edit
-            </Button>
-            <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
-              Delete
-            </Button>
-          </CardActions>
-        </CardBody>
+          <Row className="gx-1 mb-3">
+            <Col xs="auto">
+              <Button color="primary" outline size="sm" onClick={toggleEditModal}>
+                Edit
+              </Button>
+            </Col>
+            <Col />
+            <Col xs="auto">
+              <Button color="danger" outline size="sm" onClick={toggleConfirmDisableModal}>
+                Disable
+              </Button>
+            </Col>
+            <Col xs="auto">
+              <Button color="danger" outline size="sm" onClick={toggleConfirmDeleteModal}>
+                Delete
+              </Button>
+            </Col>
+          </Row>
+        </CardFooter>
       </StyledCard>
 
       <Modal isOpen={editModalIsOpen} toggle={toggleEditModal}>
@@ -223,6 +265,21 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
           </Button>
           <Button color="primary" type="submit" form={ENDPOINT_FORM_ID}>
             Save
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={confirmDisableModalIsOpen} toggle={toggleConfirmDisableModal}>
+        <ModalHeader toggle={toggleConfirmDisableModal}>Confirm Disable</ModalHeader>
+        <ModalBody>
+          Are you sure you want to disable the endpoint <strong>{endpoint.description}</strong>?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={confirmDisableEndpoint}>
+            Disable
+          </Button>
+          <Button color="secondary" onClick={toggleConfirmDisableModal}>
+            Cancel
           </Button>
         </ModalFooter>
       </Modal>

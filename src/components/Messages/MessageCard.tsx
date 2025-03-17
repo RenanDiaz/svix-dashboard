@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardTitle, Button, Badge } from "reactstrap";
 import { Application, Message } from "../../types";
 import { LinkContainer } from "react-router-bootstrap";
-import { getStatusInfo } from "../../globals/utils";
+import { formatDatetime, getStatusInfo } from "../../globals/utils";
 
 interface MessageCardProps {
   message: Message;
@@ -68,11 +68,6 @@ const StatusBadge = styled(Badge)<{ $statusType: "success" | "warning" | "danger
 `;
 
 const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
   const statusInfo =
     message.status !== undefined
       ? getStatusInfo(message.status)
@@ -90,9 +85,9 @@ const MessageCard: FC<MessageCardProps> = ({ message, application }) => {
         <MessageId>ID: {message.id}</MessageId>
         {message.eventId && <MessageId>Event ID: {message.eventId}</MessageId>}
 
-        <TimestampInfo>Sent: {formatDate(message.timestamp)}</TimestampInfo>
+        <TimestampInfo>Sent: {formatDatetime(message.timestamp)}</TimestampInfo>
         {message.nextAttempt && (
-          <TimestampInfo>Next Attempt: {formatDate(message.nextAttempt)}</TimestampInfo>
+          <TimestampInfo>Next Attempt: {formatDatetime(message.nextAttempt)}</TimestampInfo>
         )}
 
         {message.status !== undefined && (

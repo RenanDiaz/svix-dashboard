@@ -15,15 +15,9 @@ import EndpointsList from "../components/Endpoints/EndpointsList";
 import { Endpoint, Application } from "../types";
 import { getApplications, getEndpoints } from "../services/api-client";
 import EndpointForm from "../components/Endpoints/EndpointForm";
+import { FiRefreshCw } from "react-icons/fi";
 
 const ENDPOINT_FORM_ID = "endpoint-form";
-
-const PageHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
 
 const FilterWrapper = styled.div`
   display: flex;
@@ -48,6 +42,8 @@ const Endpoints: FC = () => {
 
   const updateEndpoints = useCallback(() => {
     if (!selectedApp) return;
+    setEndpoints([]);
+    setAlreadyFetched(false);
     getEndpoints(selectedApp)
       .then(({ data }) => setEndpoints(data))
       .finally(() => setAlreadyFetched(true));
@@ -74,12 +70,25 @@ const Endpoints: FC = () => {
 
   return (
     <div>
-      <PageHeader>
-        <h1>Consumers</h1>
-        <Button color="primary" onClick={toggleCreateModal}>
-          Create Endpoint
-        </Button>
-      </PageHeader>
+      <Row>
+        <Col>
+          <Row className="align-items-center gx-2">
+            <Col xs="auto">
+              <h1>Consumers</h1>
+            </Col>
+            <Col xs="auto">
+              <Button type="button" color="link" onClick={updateEndpoints}>
+                <FiRefreshCw size={22} />
+              </Button>
+            </Col>
+          </Row>
+        </Col>
+        <Col xs="auto">
+          <Button color="primary" onClick={toggleCreateModal}>
+            Create Endpoint
+          </Button>
+        </Col>
+      </Row>
 
       <FilterWrapper>
         <FormGroup style={{ width: "300px" }}>

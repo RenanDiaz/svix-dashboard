@@ -4,6 +4,7 @@ import { Card, CardBody, CardTitle, CardSubtitle, Button, Badge } from "reactstr
 import { Attempt } from "../../types";
 import { HighlightType } from "./AttemptsList";
 import classNames from "classnames";
+import { formatDatetime } from "../../globals/utils";
 
 interface AttemptCardProps {
   attempt: Attempt;
@@ -98,11 +99,6 @@ const AttemptCard: FC<AttemptCardProps> = ({
   highlightedText,
   toggleHighlight,
 }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
   const statusInfo = getStatusInfo(attempt.status);
 
   const processResponse = (response: string) => {
@@ -158,7 +154,7 @@ const AttemptCard: FC<AttemptCardProps> = ({
           <strong>Trigger Type:</strong> {getTriggerTypeText(attempt.triggerType)}
         </AttemptInfo>
         <AttemptInfo>
-          <strong>Timestamp:</strong> {formatDate(attempt.timestamp)}
+          <strong>Timestamp:</strong> {formatDatetime(attempt.timestamp)}
         </AttemptInfo>
 
         <AttemptInfo className="mb-1">

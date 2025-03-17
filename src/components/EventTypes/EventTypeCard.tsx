@@ -14,6 +14,7 @@ import {
 import { EventType } from "../../types";
 import { deleteEventType } from "../../services/api-client";
 import EventTypeForm from "./EventTypeForm";
+import { formatDatetime } from "../../globals/utils";
 
 const EVENT_TYPE_FORM_ID = "event-type-form";
 
@@ -61,11 +62,6 @@ const EventTypeCard: FC<EventTypeCardProps> = ({ eventType, updateEventTypes }) 
   const [editModalIsOpen, setEditModalIsOpen] = useState<boolean>(false);
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
   const toggleEditModal = () => setEditModalIsOpen((prev) => !prev);
 
   const handleEditSuccess = () => {
@@ -111,8 +107,8 @@ const EventTypeCard: FC<EventTypeCardProps> = ({ eventType, updateEventTypes }) 
             </div>
           )}
 
-          <TimestampInfo>Created: {formatDate(eventType.createdAt)}</TimestampInfo>
-          <TimestampInfo>Last Updated: {formatDate(eventType.updatedAt)}</TimestampInfo>
+          <TimestampInfo>Created: {formatDatetime(eventType.createdAt)}</TimestampInfo>
+          <TimestampInfo>Last Updated: {formatDatetime(eventType.updatedAt)}</TimestampInfo>
 
           {eventType.schemas && (
             <DetailsWrapper>
