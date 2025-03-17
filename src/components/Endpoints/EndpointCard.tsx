@@ -192,6 +192,21 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
               </div>
             </>
           )}
+
+          {endpoint.filterTypes && (
+            <>
+              <CardSubtitle tag="h6" className="mb-2 text-muted">
+                Filter Types:
+              </CardSubtitle>
+              <div className="mb-3">
+                {endpoint.filterTypes.map((filterType) => (
+                  <Badge key={filterType} color="dark" className="me-1" pill>
+                    {filterType}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
         </CardBody>
 
         <CardFooter className="border-0 bg-body">

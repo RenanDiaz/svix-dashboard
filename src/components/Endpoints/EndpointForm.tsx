@@ -11,12 +11,13 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { Application } from "../../types";
+import { Application, EventType } from "../../types";
 import {
   createEndpoint,
   editEndpoint,
   getApplications,
   getEndpoint,
+  getEventTypes,
 } from "../../services/api-client";
 
 interface EndpointFormProps {
@@ -32,11 +33,16 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
   const [description, setDescription] = useState<string>("");
   const [url, setUrl] = useState<string>("");
   const [channels, setChannels] = useState<string[]>([]);
+  const [filterTypes, setFilterTypes] = useState<EventType[]>([]);
+  const [selectedFilterTypes, setSelectedFilterTypes] = useState<string[]>([]);
 
   useEffect(() => {
     getApplications().then(({ data }) => {
       setApplications(data);
       if (data.length === 1) setSelectedApp(data[0].id);
+    });
+    getEventTypes().then(({ data }) => {
+      setFilterTypes(data);
     });
   }, []);
 
@@ -48,6 +54,7 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
         setDescription(endpoint.description);
         setUrl(endpoint.url);
         setChannels(endpoint.channels || []);
+        setSelectedFilterTypes(endpoint.filterTypes || []);
       })
       .catch((err) => {
         console.error(err);
@@ -112,6 +119,7 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
         </Input>
         <Label for="application">Application</Label>
       </FormGroup>
+
       <FormGroup floating>
         <Input
           type="text"
@@ -124,6 +132,7 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
         />
         <Label for="description">Description</Label>
       </FormGroup>
+
       <FormGroup floating>
         <Input
           type="text"
@@ -136,6 +145,33 @@ const EndpointForm: FC<EndpointFormProps> = ({ applicationId, endpointId, formId
         />
         <Label for="url">URL</Label>
       </FormGroup>
+
+      <Card>
+        <CardHeader>Filter Types</CardHeader>
+        <CardBody>
+          {filterTypes.map(({ name }) => (
+            <FormGroup key={name} check>
+              <Label check>
+                <Input
+                  type="checkbox"
+                  checked={selectedFilterTypes.includes(name)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedFilterTypes([...selectedFilterTypes, name]);
+                    } else {
+                      setSelectedFilterTypes(
+                        selectedFilterTypes.filter((filterType) => filterType !== name)
+                      );
+                    }
+                  }}
+                />
+                {name}
+              </Label>
+            </FormGroup>
+          ))}
+        </CardBody>
+      </Card>
+
       <Card>
         <CardHeader>
           <Row>
