@@ -4,7 +4,7 @@ import { Card, CardBody, CardTitle, CardSubtitle, Button, Badge } from "reactstr
 import { Attempt } from "../../types";
 import { HighlightType } from "./AttemptsList";
 import classNames from "classnames";
-import { formatDatetime } from "../../globals/utils";
+import { formatDatetime, getStatusInfo } from "../../globals/utils";
 
 interface AttemptCardProps {
   attempt: Attempt;
@@ -68,20 +68,6 @@ const ResponseWrapper = styled.div`
   max-height: 200px;
   overflow-y: auto;
 `;
-
-// Helper function to determine status badge color and text
-const getStatusInfo = (status: 0 | 1 | 2 | 3) => {
-  switch (status) {
-    case 0:
-      return { color: "success", text: "Success" };
-    case 1:
-      return { color: "warning", text: "Pending" };
-    case 2:
-      return { color: "danger", text: "Failed" };
-    case 3:
-      return { color: "info", text: "Sending" };
-  }
-};
 
 // Helper function to determine trigger type text
 const getTriggerTypeText = (triggerType: 0 | 1) => {

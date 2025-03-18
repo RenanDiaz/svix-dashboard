@@ -86,7 +86,6 @@ export const getEndpoints = (applicationId: string): Promise<EndpointsResponse> 
 
 export const getEndpoint = (applicationId: string, endpointId: string): Promise<Endpoint> => {
   return apiClient.get(`/api/v1/app/${applicationId}/endpoint/${endpointId}`).then((response) => {
-    console.log({ response });
     if (response.status === 200) return response.data;
     throw new Error(response.statusText);
   });
@@ -109,13 +108,10 @@ export const createEndpoint = (
   applicationId: string,
   endpoint: EndpointPayload
 ): Promise<Endpoint> => {
-  return apiClient
-    .post(`/api/v1/app/${applicationId}/endpoint`, endpoint)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error creating endpoint", error);
-      return null;
-    });
+  return apiClient.post(`/api/v1/app/${applicationId}/endpoint`, endpoint).then((response) => {
+    if (response.status === 201) return response.data;
+    throw new Error(response.statusText);
+  });
 };
 
 export const editEndpoint = (
@@ -125,10 +121,9 @@ export const editEndpoint = (
 ): Promise<Endpoint> => {
   return apiClient
     .patch(`/api/v1/app/${applicationId}/endpoint/${endpointId}`, endpoint)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error editing endpoint", error);
-      return null;
+    .then((response) => {
+      if (response.status === 200) return response.data;
+      throw new Error(response.statusText);
     });
 };
 
@@ -170,7 +165,6 @@ export const getMessages = (applicationId: string): Promise<MessagesResponse> =>
 
 export const getMessage = (messageId: string): Promise<Message> => {
   return apiClient.get(`/api/v1/msg/${messageId}`).then((response) => {
-    console.log({ response });
     if (response.status === 200) return response.data;
     throw new Error(response.statusText);
   });

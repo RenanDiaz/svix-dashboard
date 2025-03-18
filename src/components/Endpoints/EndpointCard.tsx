@@ -21,6 +21,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import EndpointForm from "./EndpointForm";
 import { NumericFormat } from "react-number-format";
 import { formatDatetime } from "../../globals/utils";
+import ErrorModal from "../ErrorModal";
 
 const ENDPOINT_FORM_ID = "endpoint-form";
 
@@ -63,9 +64,8 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
   const [editModalIsOpen, setEditModalIsOpen] = useState<boolean>(false);
   const [confirmDisableModalIsOpen, setConfirmDisableModalIsOpen] = useState<boolean>(false);
   const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [showError, setShowError] = useState<boolean>(false);
   const [deliveryStats, setDeliveryStats] = useState<EndpointStats>();
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     if (!application) return;
@@ -90,7 +90,6 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
       })
       .catch((error) => {
         setErrorMessage(error.message);
-        setShowError(true);
       });
   };
 
@@ -105,12 +104,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
       })
       .catch((error) => {
         setErrorMessage(error.message);
-        setShowError(true);
       });
-  };
-
-  const toggleErrorModal = () => {
-    setShowError(!showError);
   };
 
   const handleErrorClosed = () => {
@@ -314,15 +308,7 @@ const EndpointCard: FC<EndpointCardProps> = ({ endpoint, application, updateEndp
         </ModalFooter>
       </Modal>
 
-      <Modal isOpen={showError} toggle={toggleErrorModal} onClosed={handleErrorClosed}>
-        <ModalHeader toggle={() => setShowError(false)}>Error</ModalHeader>
-        <ModalBody>{errorMessage}</ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={() => setShowError(false)}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
+      <ErrorModal errorMessage={errorMessage} onClosed={handleErrorClosed} />
     </>
   );
 };

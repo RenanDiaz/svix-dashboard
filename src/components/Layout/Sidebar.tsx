@@ -46,22 +46,22 @@ const Sidebar: FC = () => {
       </SidebarHeader>
       <SidebarMenu vertical>
         <NavItem>
-          <SidebarLink tag={RRNavLink} to="/applications" activeClassName="active">
+          <SidebarLink tag={RRNavLink} to="/applications">
             Applications
           </SidebarLink>
         </NavItem>
         <NavItem>
-          <SidebarLink tag={RRNavLink} to="/endpoints" activeClassName="active">
+          <SidebarLink tag={RRNavLink} to="/endpoints">
             Consumers
           </SidebarLink>
         </NavItem>
         <NavItem>
-          <SidebarLink tag={RRNavLink} to="/messages" activeClassName="active">
+          <SidebarLink tag={RRNavLink} to="/messages">
             Messages
           </SidebarLink>
         </NavItem>
         <NavItem>
-          <SidebarLink tag={RRNavLink} to="/event-types" activeClassName="active">
+          <SidebarLink tag={RRNavLink} to="/event-types">
             Event Types
           </SidebarLink>
         </NavItem>

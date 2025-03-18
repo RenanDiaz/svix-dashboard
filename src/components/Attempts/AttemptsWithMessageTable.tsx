@@ -19,6 +19,7 @@ import { AttemptWithMessage } from "../../types";
 import { formatDatetime } from "../../globals/utils";
 import AttemptReplayOptions from "./AttemptReplayOptions";
 import { recoverEndpoint, replayMissing, resendMessage } from "../../services/api-client";
+import ErrorModal from "../ErrorModal";
 
 const ATTEMPT_REPLAY_FORM_ID = "attempt-replay-form";
 
@@ -63,7 +64,6 @@ const AttemptWithMessageTableRow: FC<AttemptWithMessageTableRowProps> = ({
 }) => {
   const [popoverIsOpen, setPopoverIsOpen] = useState<boolean>(false);
   const [replayModalIsOpen, setReplayModalIsOpen] = useState<boolean>(false);
-  const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const togglePopover = () => setPopoverIsOpen((prev) => !prev);
@@ -89,12 +89,9 @@ const AttemptWithMessageTableRow: FC<AttemptWithMessageTableRowProps> = ({
         toggleReplayModal();
       } else {
         setErrorMessage(message || "An error occurred while trying to replay the message");
-        setShowError(true);
       }
     });
   };
-
-  const toggleErrorModal = () => setShowError((prev) => !prev);
 
   const handleErrorClosed = () => {
     setErrorMessage("");
@@ -157,15 +154,7 @@ const AttemptWithMessageTableRow: FC<AttemptWithMessageTableRowProps> = ({
         </ModalFooter>
       </Modal>
 
-      <Modal isOpen={showError} toggle={toggleErrorModal} onClosed={handleErrorClosed}>
-        <ModalHeader toggle={() => setShowError(false)}>Error</ModalHeader>
-        <ModalBody>{errorMessage}</ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={() => setShowError(false)}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
+      <ErrorModal errorMessage={errorMessage} onClosed={handleErrorClosed} />
     </>
   );
 };
